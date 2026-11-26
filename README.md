@@ -29,7 +29,7 @@ Choose timed (30–120 seconds) or untimed practice, arithmetic focus, starting 
 
 ## Tracking and privacy
 
-MediaPipe Pose Landmarker Full estimates 33 body landmarks, with gameplay using the mean of thumb, index and pinky positions for each hand. GPU initialization falls back to CPU. Visibility filtering, adjustable EMA smoothing and a 300 ms shared hit cooldown help reduce false hits. Two poses are enabled for experimental multiplayer. Camera processing occurs in the browser; no footage is intentionally uploaded or recorded by the game. The model, runtime and fonts are fetched from external hosts, so first load requires connectivity. Local scores and progress stay in the browser unless exported.
+MediaPipe Pose Landmarker Full estimates 33 body landmarks, with gameplay using the mean of thumb, index and pinky positions for each hand. GPU initialization falls back to CPU. Hand tracking defaults to adaptive One Euro filtering (responsiveness 0.35), with selectable EMA or raw modes. All three hand landmarks and the wrist must have at least 75% visibility. Outlier rejection, a configurable speed limit (default 600 px/s in a 640-wide reference space), and a 250 ms reacquisition cooldown reduce false hits. The existing 300 ms shared hit cooldown is retained for gameplay. Two poses are enabled for experimental multiplayer. Camera processing occurs in the browser; no footage is intentionally uploaded or recorded by the game. The model, runtime and fonts are fetched from external hosts, so first load requires connectivity. Local scores and progress stay in the browser unless exported.
 
 ## Deploy
 
