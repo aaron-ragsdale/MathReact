@@ -20,7 +20,7 @@ Choose timed (30–120 seconds) or untimed practice, arithmetic focus, starting 
 ## Additional features
 
 - Adaptive difficulty: after eight selections, difficulty increases at 87.5% correct or higher and decreases at 50% or lower.
-- Two-player camera mode: stand on opposite sides of the view. Players are assigned by shoulder midpoint and can select targets in their own half. The equation and timer are shared; individual hit scores are separate from the combined arcade score. This is experimental, especially in classic modes where targets are shared.
+- Two-player camera mode: stand on opposite sides of the view. Hands are assigned by palm position and can select targets in their own half. The equation and timer are shared; individual hit scores are separate from the combined arcade score. This is experimental, especially in classic modes where targets are shared.
 - Teacher mode: enter one verified arithmetic equation per line, e.g. `7 × 8 = 56`. Supports nonnegative integer answers and single-operation equations. Custom questions apply to falling, stationary and memory modes, not Equation Rush.
 - Progress dashboard: keeps the latest 100 rounds in browser local storage; export history as JSON.
 - Round CSV: question, target/correct answer, selection, result, response time, player and hand.
@@ -29,7 +29,7 @@ Choose timed (30–120 seconds) or untimed practice, arithmetic focus, starting 
 
 ## Tracking and privacy
 
-MediaPipe Pose Landmarker Full estimates 33 body landmarks, with gameplay using the mean of thumb, index and pinky positions for each hand. GPU initialization falls back to CPU. Hand tracking defaults to a faster adaptive One Euro filter (responsiveness 0.75), with selectable EMA or raw modes. Wrist and at least one hand landmark must have 50% visibility. Brief dropouts retain filter state without allowing collisions from invisible hands. Optional speed limiting is off by default; reacquisition takes 50 ms and answer hits have a 140 ms shared cooldown. Two poses are enabled for experimental multiplayer. Camera processing occurs in the browser; no footage is intentionally uploaded or recorded by the game. The model, runtime and fonts are fetched from external hosts, so first load requires connectivity. Local scores and progress stay in the browser unless exported.
+MediaPipe Hand Landmarker estimates 21 landmarks per detected hand, with gameplay using the average of the wrist and four finger-base landmarks for a stable palm cursor. Right hand is selected by default; left hand and both hands are available in settings. No pose model is loaded. GPU initialization falls back to CPU. Hand tracking defaults to a faster adaptive One Euro filter (responsiveness 0.75), with selectable EMA or raw modes. Hand detection, presence and tracking confidence thresholds are 0.5; hand selection uses the model's handedness classification. Brief dropouts retain filter state without allowing collisions from invisible hands. Optional speed limiting is off by default; reacquisition takes 50 ms and answer hits have a 140 ms shared cooldown. Up to two hands are detected in solo play; multiplayer supports up to four when both hands are selected. Hand ownership is determined by screen half, not person identity. Camera processing occurs in the browser; no footage is intentionally uploaded or recorded by the game. The model, runtime and fonts are fetched from external hosts, so first load requires connectivity. Local scores and progress stay in the browser unless exported.
 
 ## Deploy
 
@@ -37,6 +37,6 @@ The repository is a static single-page application. In GitHub Settings → Pages
 
 ## Limitations
 
-Pose estimates can jitter, especially with occlusion or poor lighting. Response time combines thinking and movement. Multiplayer uses screen halves rather than persistent person identity, and shares questions, timer and global collision cooldown. Browser/device camera performance requires live testing. Results are practice feedback rather than standardized assessments.
+Hand estimates can jitter, especially with occlusion or poor lighting. Response time combines thinking and movement. Multiplayer uses screen halves rather than persistent person identity, and shares questions, timer and global collision cooldown. Browser/device camera performance requires live testing. Results are practice feedback rather than standardized assessments.
 
 Falling bubbles disappear immediately when their lower edge reaches the screen bottom. Correct bubbles count as misses without a point deduction; distractors and expired power-ups disappear without penalty.
