@@ -59,7 +59,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
   <div class="row"><button class="alt" id="tourBtn">Quick walkthrough</button><button class="alt" id="historyBtn">Progress dashboard</button></div><div class="settings"><label>Game style<select id="style"><option value="classic">Falling answers</option><option value="reverse">Equation Rush</option><option value="target">Stationary targets</option><option value="memory">Memory Math</option></select></label><label>Target changes every<select id="interval"><option>10</option><option selected>15</option><option>20</option><option>30</option></select></label><label>Adaptive difficulty<select id="adaptive"><option value="off">Off</option><option value="on">On</option></select></label><label>Players<select id="players"><option value="1">Solo</option><option value="2">Two players · split screen</option></select></label></div><details id="teacher"><summary>Teacher mode · custom questions</summary><p>One equation and answer per line, separated by =. Example: 7 × 8 = 56. Use only arithmetic and numbers. Custom questions apply to falling, stationary and memory modes.</p><textarea id="custom" rows="4" placeholder="7 × 8 = 56&#10;12 + 9 = 21"></textarea><label><input type="checkbox" id="useCustom"> Use custom questions</label></details><div class="row" id="modes" role="group" aria-label="Game mode"></div>
   <div class="row" id="tiers" role="group" aria-label="Difficulty"></div>
   <div class="row" id="levels" role="group" aria-label="Starting level"></div>
-  <div class="row" id="opts"></div><div class="settings"><label>Math focus<select id="focus"><option value="auto">Level progression</option><option value="add">Addition</option><option value="sub">Subtraction</option><option value="mul">Multiplication</option><option value="div">Division</option></select></label><label>Round length<select id="duration"><option>30</option><option selected>60</option><option>90</option><option>120</option></select></label><label>Hands<select id="handChoice"><option value="both">Both hands</option><option value="left">Left hand</option><option value="right">Right hand</option></select></label><label>Camera view<select id="view"><option value="corner">Corner</option><option value="background">Background</option><option value="hidden">Hidden</option></select></label><label>Responsiveness <output id="alphaOut">0.55</output><input id="alpha" type="range" min="0.15" max="1" step="0.05" value="0.55"></label><label>Bubble speed<select id="speed"><option value="0.65">Relaxed</option><option value="1" selected>Normal</option><option value="1.4">Fast</option></select></label></div><p class="micro">Camera processing stays in your browser. No account needed.</p>
+  <div class="row" id="opts"></div><div class="settings"><label>Math focus<select id="focus"><option value="auto">Level progression</option><option value="add">Addition</option><option value="sub">Subtraction</option><option value="mul">Multiplication</option><option value="div">Division</option></select></label><label>Round length<select id="duration"><option>30</option><option selected>60</option><option>90</option><option>120</option></select></label><label>Hands<select id="handChoice"><option value="both">Both hands</option><option value="left">Left hand</option><option value="right">Right hand</option></select></label><label>Camera view<select id="view"><option value="corner">Corner</option><option value="background">Background</option><option value="hidden">Hidden</option></select></label><label>Tracking responsiveness <output id="alphaOut">0.35</output><input id="alpha" type="range" min="0.05" max="1" step="0.05" value="0.35"></label><label>Tracking filter<select id="filter"><option value="euro">Adaptive · One Euro</option><option value="ema">EMA</option><option value="raw">Raw</option></select></label><label>Max hand speed<select id="maxHandSpeed"><option value="400">400 px/s</option><option value="600" selected>600 px/s</option><option value="1000">1000 px/s</option><option value="0">Unlimited</option></select></label><label>Bubble speed<select id="speed"><option value="0.65">Relaxed</option><option value="1" selected>Normal</option><option value="1.4">Fast</option></select></label></div><p class="micro">Camera processing stays in your browser. No account needed.</p>
   <div class="row" style="margin-top:20px">
     <button class="go" id="camBtn">Play with camera</button>
     <button class="alt" id="mouseBtn">Play with mouse or touch</button>
@@ -118,7 +118,7 @@ let startLevel=1,timed=true,tier=0,sfx=true,power=true,paused=false,lastPop=0,lo
 const bk=()=>'mr_best_v3_'+[cfg('style'),cfg('players'),cfg('adaptive'),cfg('interval'),$('#useCustom').checked,$('#custom').value,timed,cfg('duration'),playing?(S.baseTier??tier):tier,startLevel,cfg('focus'),cfg('speed'),power].join('_');
 const best=()=>{try{return +localStorage.getItem(bk())||0}catch(e){return 0}};
 
-function resize(){dpr=Math.min(devicePixelRatio||1,1.5);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);bgs=[]}
+function resize(){if(playing){hands=[];prev=[];clearHandFilters()}dpr=Math.min(devicePixelRatio||1,1.5);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);bgs=[]}
 addEventListener('resize',resize);resize();
 
 function begin(){
@@ -126,7 +126,7 @@ function begin(){
   
   S={level:startLevel,score:0,streak:0,solved:0,right:0,wrong:0,missed:[],bubbles:[],items:[],wait:0,time:+cfg('duration'),events:[],started:performance.now(),qTime:0,skipped:0,freeze:0,star:0,fog:0,fast:0,sw:0,itemT:6,sec:-1,fx:''};
   S.baseTier=tier;S.style=cfg('style');S.custom=custom;S.active=0;S.rushLeft=+cfg('interval');S.rushSpawn=0;S.target=null;S.recent=[];S.players=[{score:0,right:0,wrong:0},{score:0,right:0,wrong:0}];S.motion={};S.motionPrev={};S.memoryUntil=0;S.bestStreak=0;$('#menu').style.display='none';$('#end').style.display='none';$('#menuBtn').style.display='block';
-  paused=false;$('#hint').textContent='Raise your hand so the camera can see it';lastPop=performance.now();hands=[];prev=[];mouse=null;$('#pauseBtn').hidden=false;$('#pauseBtn').textContent='Pause';playing=true;prevL=S.level;fade=0;newQ();hud();toast('Go!',700);
+  paused=false;clearHandFilters();$('#hint').textContent='Raise your hand so the camera can see it';lastPop=performance.now();hands=[];prev=[];mouse=null;$('#pauseBtn').hidden=false;$('#pauseBtn').textContent='Pause';playing=true;prevL=S.level;fade=0;newQ();hud();toast('Go!',700);
 }
 function newQ(){
   if(S.style==='reverse'){newRushTarget();return} const q=S.custom.length&&$('#useCustom').checked?customQuestion():gen(S.level,tier);S.q=q;S.qTime=performance.now();S.qPaused=0;
@@ -199,16 +199,62 @@ function endRound(){
 }
 
 /* ---------- Hand tracking ---------- */
-function stopCam(){if(vid.srcObject)vid.srcObject.getTracks().forEach(t=>t.stop());vid.srcObject=null;vid.style.display='none';hands=[];prev=[];lastT=-1}
+function stopCam(){clearHandFilters();if(vid.srcObject)vid.srcObject.getTracks().forEach(t=>t.stop());vid.srcObject=null;vid.style.display='none';hands=[];prev=[];lastT=-1}
 async function startCam(){
  if(loading)return;loading=true;const st=$('#status');$('#camBtn').disabled=$('#mouseBtn').disabled=$('#again').disabled=true;st.textContent='Loading full pose model…';
  try{if(!hl){const {PoseLandmarker,FilesetResolver}=await import(CDN+'/vision_bundle.mjs');const fs=await FilesetResolver.forVisionTasks(CDN+'/wasm');const mk=d=>PoseLandmarker.createFromOptions(fs,{baseOptions:{modelAssetPath:MODEL,delegate:d},runningMode:'VIDEO',numPoses:2,minPoseDetectionConfidence:.5,minPosePresenceConfidence:.5,minTrackingConfidence:.5});try{hl=await mk('GPU')}catch(e){hl=await mk('CPU')}}
  st.textContent='Allow camera access…';vid.srcObject=await navigator.mediaDevices.getUserMedia({video:{width:640,height:480,facingMode:'user'},audio:false});await vid.play();vid.classList.toggle('background',cfg('view')==='background');vid.style.display=cfg('view')==='hidden'?'none':'block';mode='cam';lastHand=performance.now();lastT=-1;st.textContent='';begin();
  }catch(e){stopCam();st.textContent='Camera unavailable: '+(e.message||e)+'. Try mouse or touch.';$('#end').style.display='none';$('#menu').style.display='flex'}finally{loading=false;$('#camBtn').disabled=$('#mouseBtn').disabled=$('#again').disabled=false}}
+
+// Adaptive per-hand tracking. Coordinates use a 640-wide reference space
+// so the speed limit behaves consistently across screen sizes.
+const handFilters=new Map();
+function clearHandFilters(){handFilters.clear()}
+function lowpassAlpha(cutoff,dt){return 1/(1+1/(2*Math.PI*Math.max(.001,cutoff)*dt))}
+function stabilizeHand(key,x,y,now){
+ const scale=640/Math.max(1,W),rx=x*scale,ry=y*scale;
+ let f=handFilters.get(key);
+ if(!f||now-f.seen>150){f={x:rx,y:ry,rawX:rx,rawY:ry,dx:0,dy:0,seen:now,ready:now+250};handFilters.set(key,f);return null}
+ const dt=Math.max(.008,Math.min(.15,(now-f.seen)/1000));f.seen=now;
+ const speed=+cfg('maxHandSpeed'),vx=(rx-f.rawX)/dt,vy=(ry-f.rawY)/dt;
+ // Reject isolated jumps; consistent new positions can be reacquired safely.
+ const jump=Math.hypot(rx-f.rawX,ry-f.rawY);
+ if(jump>Math.max(45,(speed||1600)*dt*2.5)){
+   if(f.candidate&&Math.hypot(rx-f.candidate.x,ry-f.candidate.y)<35){f.candidate.count++}else f.candidate={x:rx,y:ry,count:1};
+   if(f.candidate.count>=3){handFilters.delete(key);return stabilizeHand(key,x,y,now)}
+   return null;
+ }
+ f.candidate=null;f.rawX=rx;f.rawY=ry;
+ const da=lowpassAlpha(1,dt);f.dx+=da*(vx-f.dx);f.dy+=da*(vy-f.dy);
+ const response=+cfg('alpha'),kind=cfg('filter');
+ const alpha=kind==='raw'?1:kind==='ema'?response:lowpassAlpha(.65+response*2+(.002+response*.018)*Math.hypot(f.dx,f.dy),dt);
+ let mx=(rx-f.x)*alpha,my=(ry-f.y)*alpha;
+ const dist=Math.hypot(mx,my),limit=speed*dt;
+ if(speed&&kind!=='raw'&&dist>limit){mx*=limit/dist;my*=limit/dist}
+ f.x+=mx;f.y+=my;
+ if(now<f.ready)return null;
+ return {x:f.x/scale,y:f.y/scale};
+}
 function track(){
  const now=performance.now();if(!hl||vid.readyState<2||vid.currentTime===lastT||now-lastInference<33)return;lastT=vid.currentTime;lastInference=now;
- let ls;try{ls=hl.detectForVideo(vid,now).landmarks}catch(e){hands=[];prev=[];return} if(!ls?.length){hands=[];prev=[];return}
- const next=[];const multi=cfg('players')==='2';const poses=multi?ls:ls.slice(0,1);for(const l of poses){const center=1-(l[11].x+l[12].x)/2;const player=multi?(center<.5?0:1):0;for(const [side,ids] of [['left',[17,19,21]],['right',[18,20,22]]]){if(cfg('handChoice')!=='both'&&cfg('handChoice')!==side)continue;const points=ids.map(i=>l[i]);const wrist=l[side==='left'?15:16];if(!wrist||wrist.visibility<.55||points.some(p=>!p||p.visibility<.5||p.x<0||p.x>1||p.y<0||p.y>1)){delete prev[player+side];continue}const x=(1-points.reduce((a,p)=>a+p.x,0)/3)*W,y=points.reduce((a,p)=>a+p.y,0)/3*H;const old=prev[player+side],alpha=+cfg('alpha');const p={x:old?old.x+(x-old.x)*alpha:x,y:old?old.y+(y-old.y)*alpha:y,r:Math.max(16,Math.min(30,W*.025)),palm:1,side,player};if(multi&&(player===0?p.x>W/2:p.x<W/2))continue;prev[player+side]=p;next.push(p)}} hands=next;if(hands.length)lastHand=now;
+ let ls;try{ls=hl.detectForVideo(vid,now).landmarks}catch(e){hands=[];clearHandFilters();return}
+ if(!ls?.length){hands=[];clearHandFilters();return}
+ const next=[],seen=new Set(),multi=cfg('players')==='2',poses=multi?ls:ls.slice(0,1);
+ for(const l of poses){
+  const center=1-(l[11].x+l[12].x)/2,player=multi?(center<.5?0:1):0;
+  for(const [side,ids] of [['left',[17,19,21]],['right',[18,20,22]]]){
+   if(cfg('handChoice')!=='both'&&cfg('handChoice')!==side)continue;
+   const key=player+':'+side,points=ids.map(i=>l[i]),wrist=l[side==='left'?15:16];
+   if(!wrist||wrist.visibility<.75||points.some(p=>!p||p.visibility<.75||!Number.isFinite(p.x)||!Number.isFinite(p.y)||p.x<0||p.x>1||p.y<0||p.y>1)){handFilters.delete(key);continue}
+   seen.add(key);
+   const x=(1-points.reduce((a,p)=>a+p.x,0)/3)*W,y=points.reduce((a,p)=>a+p.y,0)/3*H;
+   const q=stabilizeHand(key,x,y,now);if(!q)continue;
+   if(multi&&(player===0?q.x>W/2:q.x<W/2))continue;
+   next.push({...q,r:Math.max(16,Math.min(30,W*.025)),palm:1,side,player});
+  }
+ }
+ for(const key of handFilters.keys())if(!seen.has(key))handFilters.delete(key);
+ hands=next;if(hands.length)lastHand=now;
 }
 cv.addEventListener('pointermove',e=>{if(mode==='mouse')mouse={x:e.clientX,y:e.clientY}});
 cv.addEventListener('pointerdown',e=>{if(mode==='mouse')mouse={x:e.clientX,y:e.clientY}});
@@ -297,7 +343,7 @@ $('#toMenu').onclick=()=>{$('#end').style.display='none';$('#menu').style.displa
 $('#camBtn').onclick=startCam;
 $('#mouseBtn').onclick=()=>{stopCam();mode='mouse';begin()};
 $('#menuBtn').onclick=()=>{if(playing)endRound()};
-let pauseAt=0;function togglePause(){if(!playing)return;paused=!paused;if(paused){pauseAt=performance.now();hands=[];prev=[];mouse=null}else{S.qPaused+=performance.now()-pauseAt;lastPop=performance.now()}$('#pauseBtn').textContent=paused?'Resume':'Pause';$('#hint').textContent=paused?'Paused · press Space to resume':'Raise your hand so the camera can see it';$('#hint').style.display=paused?'block':'none'}$('#pauseBtn').onclick=togglePause;addEventListener('keydown',e=>{if(e.code==='Space'&&playing&&!e.repeat){e.preventDefault();togglePause()}});document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing&&!paused)togglePause()});
+let pauseAt=0;function togglePause(){if(!playing)return;paused=!paused;if(paused){pauseAt=performance.now();hands=[];prev=[];clearHandFilters();mouse=null}else{S.qPaused+=performance.now()-pauseAt;lastPop=performance.now()}$('#pauseBtn').textContent=paused?'Resume':'Pause';$('#hint').textContent=paused?'Paused · press Space to resume':'Raise your hand so the camera can see it';$('#hint').style.display=paused?'block':'none'}$('#pauseBtn').onclick=togglePause;addEventListener('keydown',e=>{if(e.code==='Space'&&playing&&!e.repeat){e.preventDefault();togglePause()}});document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing&&!paused)togglePause()});
 $('#export').onclick=()=>{const rows=['question,correct_answer,selected_answer,result,elapsed_question_seconds,player,hand',...S.events.map(e=>[e.question,e.answer,e.selected,e.result,e.seconds,e.player??'',e.hand??''].map(v=>'"'+String(v).replaceAll('"','""')+'"').join(','))];const u=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));const a=document.createElement('a');a.href=u;a.download='mathreact-results.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
 
 function parseCustom(){return $('#custom').value.split(/\n/).map(line=>{const m=line.trim().match(/^([\d\s+×*÷/−-]+)\s*=\s*(\d+)$/);if(!m)return null;const t=m[1].trim(),parts=t.match(/^(\d+)\s*([+×*÷/−-])\s*(\d+)$/);if(!parts)return null;const a=+parts[1],b=+parts[3],op=parts[2],ans=+m[2];const actual=op==='+'?a+b:op==='×'||op==='*'?a*b:op==='÷'||op==='/'?a/b:a-b;return Number.isSafeInteger(actual)&&actual===ans&&ans<=9999?{t,ans}:null}).filter(Boolean)}
