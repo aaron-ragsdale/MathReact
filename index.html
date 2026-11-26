@@ -66,11 +66,11 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 
 <section id="menu">
   <div class="eyebrow">MOVE · THINK · REACT</div><h1>Math<b>React</b></h1>
-  <p>Pop the bubble with the right answer using your hand. Reach toward a bubble with either hand. Your hand position is estimated from three pose landmarks. Wrong bubbles cost points; streaks earn bonuses. Catch ❄️ to freeze the bubbles and the timer, ⏱️ for +5 seconds and ⭐ for double points. Avoid 💣 (−15), 🌫️ (hides the numbers) and ⚡ (speeds up the bubbles).</p>
+  <p>Pop the bubble with the right answer using your hand. Reach toward a bubble with your selected hand. Right hand is the default; switch to left or both in settings. The dedicated hand model tracks your palm. Wrong bubbles cost points; streaks earn bonuses. Catch ❄️ to freeze the bubbles and the timer, ⏱️ for +5 seconds and ⭐ for double points. Avoid 💣 (−15), 🌫️ (hides the numbers) and ⚡ (speeds up the bubbles).</p>
   <div class="row"><button class="alt" id="tourBtn">Quick walkthrough</button><button class="alt" id="historyBtn">Progress dashboard</button></div><div class="settings"><label>Game style<select id="style"><option value="classic">Falling answers</option><option value="reverse">Equation Rush</option><option value="target">Stationary targets</option><option value="memory">Memory Math</option></select></label><label>Target changes every<select id="interval"><option>10</option><option selected>15</option><option>20</option><option>30</option></select></label><label>Adaptive difficulty<select id="adaptive"><option value="off">Off</option><option value="on">On</option></select></label><label>Players<select id="players"><option value="1">Solo</option><option value="2">Two players · split screen</option></select></label></div><details id="teacher"><summary>Teacher mode · custom questions</summary><p>One equation and answer per line, separated by =. Example: 7 × 8 = 56. Use only arithmetic and numbers. Custom questions apply to falling, stationary and memory modes.</p><textarea id="custom" rows="4" placeholder="7 × 8 = 56&#10;12 + 9 = 21"></textarea><label><input type="checkbox" id="useCustom"> Use custom questions</label></details><div class="row" id="modes" role="group" aria-label="Game mode"></div>
   <div class="row" id="tiers" role="group" aria-label="Difficulty"></div>
   <div class="row" id="levels" role="group" aria-label="Starting level"></div>
-  <div class="row" id="opts"></div><div class="settings"><label>Math focus<select id="focus"><option value="auto">Level progression</option><option value="add">Addition</option><option value="sub">Subtraction</option><option value="mul">Multiplication</option><option value="div">Division</option></select></label><label>Round length<select id="duration"><option>30</option><option selected>60</option><option>90</option><option>120</option></select></label><label>Hands<select id="handChoice"><option value="both">Both hands</option><option value="left">Left hand</option><option value="right">Right hand</option></select></label><label>Camera view<select id="view"><option value="corner">Corner</option><option value="background">Background</option><option value="hidden">Hidden</option></select></label><label>Tracking responsiveness <output id="alphaOut">0.75</output><input id="alpha" type="range" min="0.05" max="1" step="0.05" value="0.75"></label><label>Tracking filter<select id="filter"><option value="euro">Adaptive · One Euro</option><option value="ema">EMA</option><option value="raw">Raw</option></select></label><label>Max hand speed<select id="maxHandSpeed"><option value="400">400 px/s</option><option value="600">600 px/s</option><option value="1000">1000 px/s</option><option value="0" selected>Unlimited</option></select></label><label>Bubble speed<select id="speed"><option value="0.65">Relaxed</option><option value="1" selected>Normal</option><option value="1.4">Fast</option></select></label></div><p class="micro">Camera processing stays in your browser. No account needed.</p>
+  <div class="row" id="opts"></div><div class="settings"><label>Math focus<select id="focus"><option value="auto">Level progression</option><option value="add">Addition</option><option value="sub">Subtraction</option><option value="mul">Multiplication</option><option value="div">Division</option></select></label><label>Round length<select id="duration"><option>30</option><option selected>60</option><option>90</option><option>120</option></select></label><label>Hands<select id="handChoice"><option value="right" selected>Right hand</option><option value="left">Left hand</option><option value="both">Both hands</option></select></label><label>Camera view<select id="view"><option value="corner">Corner</option><option value="background">Background</option><option value="hidden">Hidden</option></select></label><label>Tracking responsiveness <output id="alphaOut">0.75</output><input id="alpha" type="range" min="0.05" max="1" step="0.05" value="0.75"></label><label>Tracking filter<select id="filter"><option value="euro">Adaptive · One Euro</option><option value="ema">EMA</option><option value="raw">Raw</option></select></label><label>Max hand speed<select id="maxHandSpeed"><option value="400">400 px/s</option><option value="600">600 px/s</option><option value="1000">1000 px/s</option><option value="0" selected>Unlimited</option></select></label><label>Bubble speed<select id="speed"><option value="0.65">Relaxed</option><option value="1" selected>Normal</option><option value="1.4">Fast</option></select></label></div><p class="micro">Camera processing stays in your browser. No account needed.</p>
   <div class="row" style="margin-top:20px">
     <button class="go" id="camBtn">Play with camera</button>
     <button class="alt" id="mouseBtn">Play with mouse or touch</button>
@@ -83,7 +83,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 <div id="spotTour" hidden><div id="spotHole"></div><section id="spotCard" role="dialog" aria-modal="true" aria-labelledby="spotTitle" aria-describedby="spotText"><div id="spotCount"></div><h2 id="spotTitle"></h2><p id="spotText"></p><div class="row"><button class="alt" id="spotBack">Back</button><button class="go" id="spotNext">Next</button><button id="spotSkip">Skip</button></div></section></div><dialog id="panel"><h2 id="panelTitle"></h2><div id="panelBody"></div><div class="row"><button class="go" id="panelNext" hidden>Next</button><button class="alt" id="panelClose">Close</button></div></dialog><script>
 const $=s=>document.querySelector(s), cv=$('#c'), ctx=cv.getContext('2d'), vid=$('#v');
 const CDN='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
-const MODEL='https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task';
+const MODEL='https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task';
 const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
 
@@ -212,8 +212,8 @@ function endRound(){
 /* ---------- Hand tracking ---------- */
 function stopCam(){clearHandFilters();if(vid.srcObject)vid.srcObject.getTracks().forEach(t=>t.stop());vid.srcObject=null;vid.style.display='none';hands=[];prev=[];lastT=-1}
 async function startCam(){
- if(loading)return;loading=true;const st=$('#status');$('#camBtn').disabled=$('#mouseBtn').disabled=$('#again').disabled=true;st.textContent='Loading full pose model…';
- try{if(!hl){const {PoseLandmarker,FilesetResolver}=await import(CDN+'/vision_bundle.mjs');const fs=await FilesetResolver.forVisionTasks(CDN+'/wasm');const mk=d=>PoseLandmarker.createFromOptions(fs,{baseOptions:{modelAssetPath:MODEL,delegate:d},runningMode:'VIDEO',numPoses:2,minPoseDetectionConfidence:.5,minPosePresenceConfidence:.5,minTrackingConfidence:.5});try{hl=await mk('GPU')}catch(e){hl=await mk('CPU')}}
+ if(loading)return;loading=true;const st=$('#status');$('#camBtn').disabled=$('#mouseBtn').disabled=$('#again').disabled=true;st.textContent='Loading hand tracking model…';
+ try{const count=cfg('players')==='2'?(cfg('handChoice')==='both'?4:2):2;if(!hl){const {HandLandmarker,FilesetResolver}=await import(CDN+'/vision_bundle.mjs');const fs=await FilesetResolver.forVisionTasks(CDN+'/wasm');const mk=d=>HandLandmarker.createFromOptions(fs,{baseOptions:{modelAssetPath:MODEL,delegate:d},runningMode:'VIDEO',numHands:count,minHandDetectionConfidence:.5,minHandPresenceConfidence:.5,minTrackingConfidence:.5});try{hl=await mk('GPU')}catch(e){hl=await mk('CPU')}}else{await hl.setOptions({numHands:count})}
  st.textContent='Allow camera access…';vid.srcObject=await navigator.mediaDevices.getUserMedia({video:{width:640,height:480,facingMode:'user'},audio:false});await vid.play();vid.classList.toggle('background',cfg('view')==='background');vid.style.display=cfg('view')==='hidden'?'none':'block';mode='cam';lastHand=performance.now();lastT=-1;st.textContent='';begin();
  }catch(e){stopCam();st.textContent='Camera unavailable: '+(e.message||e)+'. Try mouse or touch.';$('#end').style.display='none';$('#menu').style.display='flex'}finally{loading=false;$('#camBtn').disabled=$('#mouseBtn').disabled=$('#again').disabled=false}}
 
@@ -248,21 +248,26 @@ function stabilizeHand(key,x,y,now){
 }
 function track(){
  const now=performance.now();if(!hl||vid.readyState<2||vid.currentTime===lastT||now-lastInference<16)return;lastT=vid.currentTime;lastInference=now;
- let ls;try{ls=hl.detectForVideo(vid,now).landmarks}catch(e){hands=[];clearHandFilters();return}
- if(!ls?.length){hands=[];return}
- const next=[],seen=new Set(),multi=cfg('players')==='2',poses=multi?ls:ls.slice(0,1);
- for(const l of poses){
-  const center=1-(l[11].x+l[12].x)/2,player=multi?(center<.5?0:1):0;
-  for(const [side,ids] of [['left',[17,19,21]],['right',[18,20,22]]]){
-   if(cfg('handChoice')!=='both'&&cfg('handChoice')!==side)continue;
-   const key=player+':'+side,points=ids.map(i=>l[i]),wrist=l[side==='left'?15:16];
-   const valid=p=>p&&p.visibility>=.5&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=0&&p.x<=1&&p.y>=0&&p.y<=1;const good=points.filter(valid);if(!valid(wrist)||!good.length)continue;
-   seen.add(key);
-   const x=(1-good.reduce((a,p)=>a+p.x,0)/good.length)*W,y=good.reduce((a,p)=>a+p.y,0)/good.length*H;
-   const q=stabilizeHand(key,x,y,now);if(!q)continue;
-   if(multi&&(player===0?q.x>W/2:q.x<W/2))continue;
-   next.push({...q,r:Math.max(16,Math.min(30,W*.025)),palm:1,side,player});
-  }
+ let result;try{result=hl.detectForVideo(vid,now)}catch(e){hands=[];clearHandFilters();return}
+ const ls=result.landmarks||[],categories=result.handedness||result.handednesses||[];
+ if(!ls.length){hands=[];return}
+ const candidates=new Map(),seen=new Set(),multi=cfg('players')==='2',choice=cfg('handChoice');
+ for(let i=0;i<ls.length;i++){
+  const l=ls[i],cat=categories[i]?.[0],label=(cat?.categoryName||cat?.displayName||'').toLowerCase();
+  // Inference receives unmirrored camera pixels; only the displayed cursor is mirrored.
+  const side=label==='left'?'left':label==='right'?'right':null;
+  if(!side||(choice!=='both'&&choice!==side))continue;
+  const points=[0,5,9,13,17].map(k=>l[k]);
+  if(points.some(p=>!p||!Number.isFinite(p.x)||!Number.isFinite(p.y)))continue;
+  const nx=1-points.reduce((a,p)=>a+p.x,0)/points.length,ny=points.reduce((a,p)=>a+p.y,0)/points.length;
+  if(nx<0||nx>1||ny<0||ny>1)continue;
+  const player=multi?(nx<.5?0:1):0,key=player+':'+side,x=nx*W,y=ny*H,score=cat?.score??0;
+  const old=candidates.get(key);if(!old||score>old.score)candidates.set(key,{x,y,player,side,score});
+ }
+ const next=[];
+ for(const [key,p] of candidates){seen.add(key);const q=stabilizeHand(key,p.x,p.y,now);if(!q)continue;
+  if(multi&&(p.player===0?q.x>W/2:q.x<W/2))continue;
+  next.push({...q,r:Math.max(16,Math.min(30,W*.025)),palm:1,side:p.side,player:p.player});
  }
  for(const [key,f] of handFilters)if(!seen.has(key)&&now-f.seen>150)handFilters.delete(key);
  hands=next;if(hands.length)lastHand=now;
@@ -383,7 +388,7 @@ const lessons=[
  ['#opts','Game extras','Turn sound effects and power-ups on or off.'],
  ['#focus','Math focus','Practice a specific operation or follow the level progression.'],
  ['#duration','Round length','Choose how long a timed round lasts.'],
- ['#handChoice','Hand controls','Use one hand or both to reach for bubbles.'],
+ ['#handChoice','Hand controls','Right hand is the default. Choose left or both hands to reach for bubbles.'],
  ['#view','Camera view','Show the camera in the corner, as a background, or hide it.'],
  ['#filter','Tracking filter','One Euro balances stability and responsiveness. EMA and raw tracking are also available.'],
  ['#alpha','Responsiveness','Lower values favor stability; higher values follow movement faster.'],
