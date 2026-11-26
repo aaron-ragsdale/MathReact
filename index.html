@@ -40,22 +40,23 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 @media (prefers-reduced-motion:reduce){#q.pulse{animation:none}}
 
 :root{--sand:#e5ff75;--mist:#c1d7d2} #menu,#end{background:linear-gradient(120deg,#071b20f7,#12353ce8);padding:clamp(18px,4vw,64px);justify-content:flex-start;gap:5px} .eyebrow{font-size:12px;font-weight:800;letter-spacing:.24em;color:var(--sand)} h1{font-size:clamp(48px,9vw,110px)} #menu p,#end p{margin:12px 0;max-width:65ch;font-size:15px} .settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;max-width:940px;margin:12px 0}.settings label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mist);background:#ffffff0b;border:1px solid #ffffff20;border-radius:12px;padding:10px}.settings select{background:#102c32;color:white;padding:8px;border:1px solid #ffffff30;border-radius:7px;font:inherit}.settings input{accent-color:var(--sand)} .lv.sel{background:var(--sand);color:#102c32;border-color:var(--sand)} .lv{font-size:13px}.micro{font-size:12px!important} #pauseBtn{position:fixed;right:14px;top:14px;z-index:4;border:1px solid #ffffff50;background:#071b20;color:white;border-radius:99px;padding:10px 16px;cursor:pointer} #v.background{inset:0;width:100%;height:100%;object-fit:fill;opacity:.28;z-index:1;pointer-events:none;border:0;border-radius:0} #v{pointer-events:none} #stats{flex-wrap:wrap;gap:5px} #stats span{font-size:12px} #q{font-size:clamp(32px,6vw,68px)} #hint{max-width:90vw;text-align:center;bottom:12px} #menu,#end{touch-action:pan-y;user-select:text} @media(max-width:600px){#menuBtn,#pauseBtn{top:auto;bottom:10px} #hint{bottom:60px} #v:not(.background){width:110px;bottom:58px} .settings{grid-template-columns:repeat(2,minmax(0,1fr))}}
-</style>
+
+#teacher{max-width:940px;background:#ffffff0b;padding:12px;border:1px solid #ffffff25;border-radius:12px} #teacher textarea{display:block;width:100%;background:#102c32;color:white;border:1px solid #ffffff40;border-radius:8px;padding:10px;font:inherit;margin:8px 0} #teacher summary{cursor:pointer;font-weight:800} dialog{background:#102c32;color:white;border:1px solid #ffffff40;border-radius:18px;padding:24px;max-width:min(680px,92vw);max-height:85vh;overflow:auto;margin:auto;touch-action:pan-y} dialog::backdrop{background:#000b} dialog p{margin:12px 0;line-height:1.5} dialog table{width:100%;border-collapse:collapse;font-size:13px} dialog td,dialog th{padding:8px;border-bottom:1px solid #ffffff20;text-align:left} .tour-focus{outline:3px solid #e5ff75;outline-offset:5px} #rushInfo{font-weight:800;color:#e5ff75;margin-top:5px;font-size:14px} #menu,#end{overscroll-behavior:contain} #menu .settings{margin:6px 0} </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 <video id="v" playsinline muted></video>
 <div id="hud"><div id="q">–</div>
   <div id="stats"><span id="tm"></span><span id="lv"></span><span id="sc"></span><span id="st"></span></div>
-  <div id="prog"><i></i></div><div id="fx"></div></div>
+  <div id="rushInfo"></div><div id="prog"><i></i></div><div id="fx"></div></div>
 <button id="menuBtn">End round</button><button id="pauseBtn" hidden>Pause</button>
 <div id="toast"></div>
 <div id="hint">Raise your hand so the camera can see it</div>
 
 <section id="menu">
-  <div class="eyebrow">MOVE · THINK · REACT</div><h1>Math<b>Reacts</b></h1>
+  <div class="eyebrow">MOVE · THINK · REACT</div><h1>Math<b>React</b></h1>
   <p>Pop the bubble with the right answer using your hand. Reach toward a bubble with either hand. Your hand position is estimated from three pose landmarks. Wrong bubbles cost points; streaks earn bonuses. Catch ❄️ to freeze the bubbles and the timer, ⏱️ for +5 seconds and ⭐ for double points. Avoid 💣 (−15), 🌫️ (hides the numbers) and ⚡ (speeds up the bubbles).</p>
-  <div class="row" id="modes" role="group" aria-label="Game mode"></div>
+  <div class="row"><button class="alt" id="tourBtn">Quick walkthrough</button><button class="alt" id="historyBtn">Progress dashboard</button></div><div class="settings"><label>Game style<select id="style"><option value="classic">Falling answers</option><option value="reverse">Equation Rush</option><option value="target">Stationary targets</option><option value="memory">Memory Math</option></select></label><label>Target changes every<select id="interval"><option>10</option><option selected>15</option><option>20</option><option>30</option></select></label><label>Adaptive difficulty<select id="adaptive"><option value="off">Off</option><option value="on">On</option></select></label><label>Players<select id="players"><option value="1">Solo</option><option value="2">Two players · split screen</option></select></label></div><details id="teacher"><summary>Teacher mode · custom questions</summary><p>One equation and answer per line, separated by =. Example: 7 × 8 = 56. Use only arithmetic and numbers. Custom questions apply to falling, stationary and memory modes.</p><textarea id="custom" rows="4" placeholder="7 × 8 = 56&#10;12 + 9 = 21"></textarea><label><input type="checkbox" id="useCustom"> Use custom questions</label></details><div class="row" id="modes" role="group" aria-label="Game mode"></div>
   <div class="row" id="tiers" role="group" aria-label="Difficulty"></div>
   <div class="row" id="levels" role="group" aria-label="Starting level"></div>
   <div class="row" id="opts"></div><div class="settings"><label>Math focus<select id="focus"><option value="auto">Level progression</option><option value="add">Addition</option><option value="sub">Subtraction</option><option value="mul">Multiplication</option><option value="div">Division</option></select></label><label>Round length<select id="duration"><option>30</option><option selected>60</option><option>90</option><option>120</option></select></label><label>Hands<select id="handChoice"><option value="both">Both hands</option><option value="left">Left hand</option><option value="right">Right hand</option></select></label><label>Camera view<select id="view"><option value="corner">Corner</option><option value="background">Background</option><option value="hidden">Hidden</option></select></label><label>Responsiveness <output id="alphaOut">0.55</output><input id="alpha" type="range" min="0.15" max="1" step="0.05" value="0.55"></label><label>Bubble speed<select id="speed"><option value="0.65">Relaxed</option><option value="1" selected>Normal</option><option value="1.4">Fast</option></select></label></div><p class="micro">Camera processing stays in your browser. No account needed.</p>
@@ -68,7 +69,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 
 <section id="end" style="display:none"><h1>Round <b>over</b></h1><div class="res" id="endStats"></div><p id="review"></p><div class="row"><button class="alt" id="export">Export results CSV</button></div>
   <div class="row"><button class="go" id="again">Play again</button><button class="alt" id="toMenu">Change settings</button></div></section>
-<script>
+<dialog id="panel"><h2 id="panelTitle"></h2><div id="panelBody"></div><div class="row"><button class="go" id="panelNext" hidden>Next</button><button class="alt" id="panelClose">Close</button></div></dialog><script>
 const $=s=>document.querySelector(s), cv=$('#c'), ctx=cv.getContext('2d'), vid=$('#v');
 const CDN='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
 const MODEL='https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task';
@@ -114,30 +115,32 @@ function gen(L,D){
 let W,H,dpr,mode='menu',playing=false,hl=null,lastT=-1,lastHand=0;
 let S={},bgs=[],prevL=1,fade=0,pts=[],floats=[],hands=[],mouse=null,prev=[];
 let startLevel=1,timed=true,tier=0,sfx=true,power=true,paused=false,lastPop=0,loading=false,lastInference=0; const cfg=id=>$('#'+id).value; $('#alpha').oninput=()=>$('#alphaOut').value=cfg('alpha');
-const bk=()=>'mr_best_v2_'+[timed,cfg('duration'),tier,startLevel,cfg('focus'),cfg('speed'),power].join('_');
+const bk=()=>'mr_best_v3_'+[cfg('style'),cfg('players'),cfg('adaptive'),cfg('interval'),$('#useCustom').checked,$('#custom').value,timed,cfg('duration'),tier,startLevel,cfg('focus'),cfg('speed'),power].join('_');
 const best=()=>{try{return +localStorage.getItem(bk())||0}catch(e){return 0}};
 
 function resize(){dpr=Math.min(devicePixelRatio||1,1.5);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);bgs=[]}
 addEventListener('resize',resize);resize();
 
 function begin(){
+  const custom=parseCustom();if($('#useCustom').checked&&cfg('style')!=='reverse'&&!custom.length){$('#status').textContent='Enter at least one valid custom equation first.';stopCam();$('#end').style.display='none';$('#menu').style.display='flex';return} if(cfg('players')==='2'&&mode!=='cam'){$('#status').textContent='Two-player mode requires the camera.';return}
+  
   S={level:startLevel,score:0,streak:0,solved:0,right:0,wrong:0,missed:[],bubbles:[],items:[],wait:0,time:+cfg('duration'),events:[],started:performance.now(),qTime:0,skipped:0,freeze:0,star:0,fog:0,fast:0,sw:0,itemT:6,sec:-1,fx:''};
-  $('#menu').style.display='none';$('#end').style.display='none';$('#menuBtn').style.display='block';
+  S.baseTier=tier;S.style=cfg('style');S.custom=custom;S.active=0;S.rushLeft=+cfg('interval');S.rushSpawn=0;S.target=null;S.recent=[];S.players=[{score:0,right:0,wrong:0},{score:0,right:0,wrong:0}];S.motion={};S.motionPrev={};S.memoryUntil=0;S.bestStreak=0;$('#menu').style.display='none';$('#end').style.display='none';$('#menuBtn').style.display='block';
   paused=false;$('#hint').textContent='Raise your hand so the camera can see it';lastPop=performance.now();hands=[];prev=[];mouse=null;$('#pauseBtn').hidden=false;$('#pauseBtn').textContent='Pause';playing=true;prevL=S.level;fade=0;newQ();hud();toast('Go!',700);
 }
 function newQ(){
-  const q=gen(S.level,tier);S.q=q;S.qTime=performance.now();S.qPaused=0;
+  if(S.style==='reverse'){newRushTarget();return} const q=S.custom.length&&$('#useCustom').checked?customQuestion():gen(S.level,tier);S.q=q;S.qTime=performance.now();S.qPaused=0;
   const n=q.opts.length,lw=W/n,r=Math.max(18,Math.min(lw*.32,H*.1,82));
   const base=+cfg('speed')*H*(.075+.012*(S.level-1))*(1+S.solved*.03)*[.8,1,1.25][tier];
   S.bubbles=q.opts.map((v,i)=>({v,ok:v===q.ans,r,bx:lw*(i+.5),x:lw*(i+.5),y:Math.max(150,H*.24)+r+Math.random()*H*.08,vy:base*(.85+Math.random()*.3),ph:Math.random()*6,hue:i%4}));
-  $('#q').textContent=q.t+' = ?';const e=$('#q');e.classList.remove('pulse');void e.offsetWidth;e.classList.add('pulse');
+  if(S.style==='target'||S.style==='memory'){S.bubbles.forEach((b,i)=>{b.vy=0;b.y=Math.max(190,H*.43)+(i%2)*Math.min(H*.2,100);b.ph=0});S.memoryUntil=S.style==='memory'?S.active+2:0;} $('#q').textContent=q.t+' = ?';const e=$('#q');e.classList.remove('pulse');void e.offsetWidth;e.classList.add('pulse');
 }
 function hud(){
   const tm=$('#tm');tm.textContent=timed?`⏱ ${Math.max(0,Math.ceil(S.time))}s`:'Practice';tm.classList.toggle('low',timed&&S.time<=10);
   $('#lv').textContent=`Level ${S.level} · ${GRADES[S.level-1]} · ${TIERS[tier]}`;
   $('#sc').textContent=`Score ${S.score}`;
   $('#st').textContent=S.streak>1?`Streak ×${S.streak}`:`Best ${Math.max(best(),S.score)}`;
-  $('#prog i').style.width=(S.solved/8*100)+'%';
+  $('#prog i').style.width=(S.style==='reverse'?100*S.rushLeft/+cfg('interval'):S.solved/8*100)+'%';$('#rushInfo').textContent=(S.style==='reverse'?`Match the target · changes in ${Math.ceil(S.rushLeft)}s`:S.style==='memory'?'Remember the equation, then reach for the answer':'')+(cfg('players')==='2'?`   ·   P1 ${S.players[0].score} | P2 ${S.players[1].score}`:'');
 }
 let toastTimer;function toast(h,ms=1300){clearTimeout(toastTimer);const t=$('#toast');t.innerHTML=h;t.classList.add('on');toastTimer=setTimeout(()=>t.classList.remove('on'),ms)}
 
@@ -149,10 +152,11 @@ const COLS=['#0FA4AF','#4D8EE5','#F5B983','#BD9CAC'];
 function burst(x,y,col,n=14){for(let i=0;i<n;i++){const a=Math.PI*2*i/n+Math.random()*.4,s=120+Math.random()*180;pts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:.6,col})}}
 function float(x,y,txt,col){floats.push({x,y,txt,col,l:1})}
 const miss=()=>{if(!S.missed.some(m=>m.t==S.q.t))S.missed.push({t:S.q.t,a:S.q.ans})};
-function pop(b){
-  lastPop=performance.now();S.events.push({question:S.q.t,answer:S.q.ans,selected:b.v,result:b.ok?'correct':'wrong',seconds:((performance.now()-S.qTime-S.qPaused)/1000).toFixed(2)});S.bubbles=S.bubbles.filter(o=>o!==b);
+function pop(b,p){
+  if(S.style==='reverse'){rushPop(b,p);return} recordPlayer(b,p);adjust(b.ok);
+  lastPop=performance.now();S.events.push({player:p?.player??0,hand:p?.side||'pointer',question:S.q.t,answer:S.q.ans,selected:b.v,result:b.ok?'correct':'wrong',seconds:((performance.now()-S.qTime-S.qPaused)/1000).toFixed(2)});S.bubbles=S.bubbles.filter(o=>o!==b);
   if(b.ok){
-    const gain=Math.round(10*(1+Math.min(S.streak,5)*.5)*[1,1.5,2][tier]*(S.star>0?2:1));S.score+=gain;S.streak++;S.solved++;S.right++;
+    const gain=Math.round(10*(1+Math.min(S.streak,5)*.5)*[1,1.5,2][tier]*(S.star>0?2:1));S.score+=gain;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);S.solved++;S.right++;
     burst(b.x,b.y,'#F5B983',22);float(b.x,b.y,'+'+gain,'#F5B983');beep(660,.12);setTimeout(()=>beep(990,.15),70);
     S.bubbles.forEach(o=>burst(o.x,o.y,COLS[o.hue],5));S.bubbles=[];
     if(S.solved>=8&&S.level<6){S.level++;S.solved=0;fade=1;prevL=S.level-1;S.wait=1.8;toast(`Level ${S.level}<br><b>${GRADES[S.level-1]}</b>`,1700);[523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.2,'triangle'),i*100))}
@@ -187,24 +191,24 @@ function drawItem(it){
   ctx.font=`${r*1.05}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(ITEMS[it.k],x,y+r*.06);
 }
 function endRound(){
-  playing=false;paused=false;$('#pauseBtn').hidden=true;stopCam();hud();$('#hint').style.display='none';$('#menuBtn').style.display='none';
+  saveHistory();tier=S.baseTier;playing=false;paused=false;$('#pauseBtn').hidden=true;stopCam();hud();$('#hint').style.display='none';$('#menuBtn').style.display='none';
   const n=S.right+S.wrong+S.skipped,acc=n?Math.round(S.right/n*100):0;
   $('#endStats').innerHTML=`<div>${S.score}<small>score${S.score>0&&S.score>=best()?' · matches best':''}</small></div><div>${S.right}<small>correct</small></div><div>${acc}%<small>accuracy</small></div><div>${S.level}<small>level reached</small></div><div>${S.skipped}<small>missed questions</small></div>`;
   $('#review').innerHTML=S.missed.length?'Worth another look: '+S.missed.slice(0,6).map(m=>`${m.t} = <b>${m.a}</b>`).join(' &nbsp;·&nbsp; '):(S.right?'Clean round. Nothing to review.':'');
-  $('#end').style.display='flex';[523,659,784].forEach((f,i)=>setTimeout(()=>beep(f,.25,'triangle'),i*120));
+  $('#review').append(document.createTextNode(' · Best streak '+S.bestStreak+' · '+motionSummary()+(cfg('players')==='2'?` · P1 ${S.players[0].score} / P2 ${S.players[1].score}`:'')));$('#end').style.display='flex';[523,659,784].forEach((f,i)=>setTimeout(()=>beep(f,.25,'triangle'),i*120));
 }
 
 /* ---------- Hand tracking ---------- */
 function stopCam(){if(vid.srcObject)vid.srcObject.getTracks().forEach(t=>t.stop());vid.srcObject=null;vid.style.display='none';hands=[];prev=[];lastT=-1}
 async function startCam(){
  if(loading)return;loading=true;const st=$('#status');$('#camBtn').disabled=$('#mouseBtn').disabled=$('#again').disabled=true;st.textContent='Loading full pose model…';
- try{if(!hl){const {PoseLandmarker,FilesetResolver}=await import(CDN+'/vision_bundle.mjs');const fs=await FilesetResolver.forVisionTasks(CDN+'/wasm');const mk=d=>PoseLandmarker.createFromOptions(fs,{baseOptions:{modelAssetPath:MODEL,delegate:d},runningMode:'VIDEO',numPoses:1,minPoseDetectionConfidence:.5,minPosePresenceConfidence:.5,minTrackingConfidence:.5});try{hl=await mk('GPU')}catch(e){hl=await mk('CPU')}}
+ try{if(!hl){const {PoseLandmarker,FilesetResolver}=await import(CDN+'/vision_bundle.mjs');const fs=await FilesetResolver.forVisionTasks(CDN+'/wasm');const mk=d=>PoseLandmarker.createFromOptions(fs,{baseOptions:{modelAssetPath:MODEL,delegate:d},runningMode:'VIDEO',numPoses:2,minPoseDetectionConfidence:.5,minPosePresenceConfidence:.5,minTrackingConfidence:.5});try{hl=await mk('GPU')}catch(e){hl=await mk('CPU')}}
  st.textContent='Allow camera access…';vid.srcObject=await navigator.mediaDevices.getUserMedia({video:{width:640,height:480,facingMode:'user'},audio:false});await vid.play();vid.classList.toggle('background',cfg('view')==='background');vid.style.display=cfg('view')==='hidden'?'none':'block';mode='cam';lastHand=performance.now();lastT=-1;st.textContent='';begin();
  }catch(e){stopCam();st.textContent='Camera unavailable: '+(e.message||e)+'. Try mouse or touch.';$('#end').style.display='none';$('#menu').style.display='flex'}finally{loading=false;$('#camBtn').disabled=$('#mouseBtn').disabled=$('#again').disabled=false}}
 function track(){
  const now=performance.now();if(!hl||vid.readyState<2||vid.currentTime===lastT||now-lastInference<33)return;lastT=vid.currentTime;lastInference=now;
- let l;try{l=hl.detectForVideo(vid,now).landmarks[0]}catch(e){hands=[];prev=[];return} if(!l){hands=[];prev=[];return}
- const next=[];for(const [side,ids] of [['left',[17,19,21]],['right',[18,20,22]]]){if(cfg('handChoice')!=='both'&&cfg('handChoice')!==side)continue;const points=ids.map(i=>l[i]);const wrist=l[side==='left'?15:16];if(!wrist||wrist.visibility<.55||points.some(p=>!p||p.visibility<.5||p.x<0||p.x>1||p.y<0||p.y>1)){delete prev[side];continue}const x=(1-points.reduce((a,p)=>a+p.x,0)/3)*W,y=points.reduce((a,p)=>a+p.y,0)/3*H;const old=prev[side],alpha=+cfg('alpha');const p={x:old?old.x+(x-old.x)*alpha:x,y:old?old.y+(y-old.y)*alpha:y,r:Math.max(16,Math.min(30,W*.025)),palm:1,side};prev[side]=p;next.push(p)} hands=next;if(hands.length)lastHand=now;
+ let ls;try{ls=hl.detectForVideo(vid,now).landmarks}catch(e){hands=[];prev=[];return} if(!ls?.length){hands=[];prev=[];return}
+ const next=[];const multi=cfg('players')==='2';const poses=multi?ls:ls.slice(0,1);for(const l of poses){const center=1-(l[11].x+l[12].x)/2;const player=multi?(center<.5?0:1):0;for(const [side,ids] of [['left',[17,19,21]],['right',[18,20,22]]]){if(cfg('handChoice')!=='both'&&cfg('handChoice')!==side)continue;const points=ids.map(i=>l[i]);const wrist=l[side==='left'?15:16];if(!wrist||wrist.visibility<.55||points.some(p=>!p||p.visibility<.5||p.x<0||p.x>1||p.y<0||p.y>1)){delete prev[player+side];continue}const x=(1-points.reduce((a,p)=>a+p.x,0)/3)*W,y=points.reduce((a,p)=>a+p.y,0)/3*H;const old=prev[player+side],alpha=+cfg('alpha');const p={x:old?old.x+(x-old.x)*alpha:x,y:old?old.y+(y-old.y)*alpha:y,r:Math.max(16,Math.min(30,W*.025)),palm:1,side,player};if(multi&&(player===0?p.x>W/2:p.x<W/2))continue;prev[player+side]=p;next.push(p)}} hands=next;if(hands.length)lastHand=now;
 }
 cv.addEventListener('pointermove',e=>{if(mode==='mouse')mouse={x:e.clientX,y:e.clientY}});
 cv.addEventListener('pointerdown',e=>{if(mode==='mouse')mouse={x:e.clientX,y:e.clientY}});
@@ -227,7 +231,7 @@ function drawBubble(b,t){
   const x=b.x,y=b.y,r=b.r,col=S.freeze>0?'#AFDDE5':COLS[b.hue];
   const g=ctx.createRadialGradient(x-r*.35,y-r*.4,r*.1,x,y,r);g.addColorStop(0,'rgba(255,255,255,.55)');g.addColorStop(.35,'rgba(255,255,255,.12)');g.addColorStop(1,'rgba(3,4,17,.55)');
   ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.fillStyle=g;ctx.fill();ctx.lineWidth=5;ctx.strokeStyle=col;ctx.stroke();
-  ctx.fillStyle='#fff';ctx.font=`800 ${r*.85}px Inter,system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='#fff';ctx.font=`800 ${typeof b.v==='string'?Math.min(r*.63,r*2.5/Math.max(3,b.v.length)):r*.85}px Inter,system-ui,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=8;ctx.fillText(S.fog>0?'?':b.v,x,y+r*.04);ctx.shadowBlur=0;
 }
 function drawPointer(p){
@@ -246,21 +250,22 @@ function frame(now){
   if(fade>0){ctx.globalAlpha=fade;ctx.drawImage(bg(prevL),0,0,W,H);ctx.globalAlpha=1;fade=Math.max(0,fade-dt*.8)}
   const P=mode==='cam'?(now-lastHand<250?hands:[]):(mouse?[mouse]:[]);
   if(playing&&!paused){
+    S.active+=dt;if(lastInference!==S.motionFrame){S.motionFrame=lastInference;measureMotion(P,lastInference);}if(cfg('players')==='2'){ctx.strokeStyle='#ffffff70';ctx.setLineDash([8,8]);ctx.beginPath();ctx.moveTo(W/2,150);ctx.lineTo(W/2,H);ctx.stroke();ctx.setLineDash([])}
     const fz=S.freeze>0;
     for(const k of ['freeze','star','fog','fast'])if(S[k]>0)S[k]-=dt;
     S.sw+=fz?0:dt;
-    if(S.wait>0){S.wait-=dt;if(S.wait<=0)newQ()}
-    else if(power){if(S.itemT>0)S.itemT-=dt;else if(S.bubbles.length&&S.bubbles.some(b=>b.y>0)){spawnItem();S.itemT=R(7,12)}}
+    if(S.style==='reverse'){if(!fz)rushTick(dt);hud()}else if(S.wait>0){S.wait-=dt;if(S.wait<=0)newQ()}
+    if(power&&S.wait<=0){if(S.itemT>0)S.itemT-=dt;else if(S.bubbles.length&&S.bubbles.some(b=>b.y>0)){spawnItem();S.itemT=R(7,12)}}
     if(timed&&!fz){S.time-=elapsed;const sec=Math.ceil(Math.max(0,S.time));if(sec!==S.sec){S.sec=sec;hud()}}
     if(fz){ctx.fillStyle='rgba(175,221,229,.14)';ctx.fillRect(0,0,W,H)}
     for(const b of [...S.bubbles]){
        if(!S.bubbles.includes(b))continue;
-      if(!fz||b.y<b.r)b.y+=b.vy*dt*(S.fast>0?1.8:1);b.x=b.bx+Math.sin(S.sw*1.1+b.ph)*b.r*.25;
+      if(S.style==='memory'&&S.active<S.memoryUntil)continue;if(S.style==='memory')$('#q').textContent='? = ?';if(!fz||b.y<b.r)b.y+=b.vy*dt*(S.fast>0?1.8:1);b.x=b.bx+(b.vy?Math.sin(S.sw*1.1+b.ph)*b.r*.15:0);
       if(b.y-b.r>H){S.bubbles=S.bubbles.filter(o=>o!==b);
-        if(b.ok){S.streak=0;S.skipped++;S.events.push({question:S.q.t,answer:S.q.ans,selected:"",result:"missed",seconds:((performance.now()-S.qTime-S.qPaused)/1000).toFixed(2)});S.bubbles=[];miss();hud();float(W/2,H*.8,'Missed it – next one!','#fff');S.wait=.8}}
-      else if(now-lastPop>300&&b.y>-b.r*.5&&P.some(p=>Math.hypot(p.x-b.x,p.y-b.y)<b.r+(p.r||14))){pop(b)}
+        if(S.style==='reverse'){if(b.ok){S.skipped++;S.events.push({question:b.v,answer:S.target,selected:'',result:'missed',seconds:(S.active-b.born).toFixed(2)})}continue} if(b.ok){S.streak=0;S.skipped++;S.events.push({question:S.q.t,answer:S.q.ans,selected:"",result:"missed",seconds:((performance.now()-S.qTime-S.qPaused)/1000).toFixed(2)});S.bubbles=[];miss();hud();float(W/2,H*.8,'Missed it – next one!','#fff');S.wait=.8}}
+      else if(now-lastPop>300&&b.y>Math.max(110,H*.16)){const hit=P.find(p=>Math.hypot(p.x-b.x,p.y-b.y)<b.r+(p.r||14));if(hit)pop(b,hit)}
     }
-    S.bubbles.forEach(b=>drawBubble(b,T));
+    if(S.style!=='memory'||S.active>=S.memoryUntil)S.bubbles.forEach(b=>drawBubble(b,T));
     for(const it of [...S.items]){
       it.y+=it.vy*dt;
       if(it.y-it.r>H)S.items=S.items.filter(o=>o!==it);
@@ -274,7 +279,7 @@ function frame(now){
   }
   pts=pts.filter(p=>(p.l-=dt)>0);pts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=300*dt;ctx.globalAlpha=Math.max(0,p.l/.6);ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x,p.y,5,0,7);ctx.fill()});ctx.globalAlpha=1;
   floats=floats.filter(f=>(f.l-=dt)>0);floats.forEach(f=>{f.y-=70*dt;ctx.globalAlpha=Math.min(1,f.l*2);ctx.fillStyle=f.col;ctx.font='800 34px Inter,sans-serif';ctx.textAlign='center';ctx.fillText(f.txt,f.x,f.y)});ctx.globalAlpha=1;
-  if(playing&&!paused)P.forEach(drawPointer); if(playing&&paused)S.bubbles.forEach(b=>drawBubble(b,T));
+  if(playing&&!paused)P.forEach(drawPointer); if(playing&&paused&&(S.style!=='memory'||S.active>=S.memoryUntil))S.bubbles.forEach(b=>drawBubble(b,T));
   ctx.restore();
   requestAnimationFrame(frame);
 }
@@ -293,7 +298,23 @@ $('#camBtn').onclick=startCam;
 $('#mouseBtn').onclick=()=>{stopCam();mode='mouse';begin()};
 $('#menuBtn').onclick=()=>{if(playing)endRound()};
 let pauseAt=0;function togglePause(){if(!playing)return;paused=!paused;if(paused){pauseAt=performance.now();hands=[];prev=[];mouse=null}else{S.qPaused+=performance.now()-pauseAt;lastPop=performance.now()}$('#pauseBtn').textContent=paused?'Resume':'Pause';$('#hint').textContent=paused?'Paused · press Space to resume':'Raise your hand so the camera can see it';$('#hint').style.display=paused?'block':'none'}$('#pauseBtn').onclick=togglePause;addEventListener('keydown',e=>{if(e.code==='Space'&&playing&&!e.repeat){e.preventDefault();togglePause()}});document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing&&!paused)togglePause()});
-$('#export').onclick=()=>{const rows=['question,correct_answer,selected_answer,result,elapsed_question_seconds',...S.events.map(e=>[e.question,e.answer,e.selected,e.result,e.seconds].map(v=>'"'+String(v).replaceAll('"','""')+'"').join(','))];const u=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));const a=document.createElement('a');a.href=u;a.download='mathreacts-results.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
+$('#export').onclick=()=>{const rows=['question,correct_answer,selected_answer,result,elapsed_question_seconds,player,hand',...S.events.map(e=>[e.question,e.answer,e.selected,e.result,e.seconds,e.player??'',e.hand??''].map(v=>'"'+String(v).replaceAll('"','""')+'"').join(','))];const u=URL.createObjectURL(new Blob([rows.join('\n')],{type:'text/csv'}));const a=document.createElement('a');a.href=u;a.download='mathreact-results.csv';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};
+
+function parseCustom(){return $('#custom').value.split(/\n/).map(line=>{const m=line.trim().match(/^([\d\s+×*÷/−-]+)\s*=\s*(\d+)$/);if(!m)return null;const t=m[1].trim(),parts=t.match(/^(\d+)\s*([+×*÷/−-])\s*(\d+)$/);if(!parts)return null;const a=+parts[1],b=+parts[3],op=parts[2],ans=+m[2];const actual=op==='+'?a+b:op==='×'||op==='*'?a*b:op==='÷'||op==='/'?a/b:a-b;return Number.isSafeInteger(actual)&&actual===ans&&ans<=9999?{t,ans}:null}).filter(Boolean)}
+function customQuestion(){const q=S.custom[R(0,S.custom.length-1)],opts=new Set([q.ans]);while(opts.size<[3,4,5][tier])opts.add(Math.max(0,q.ans+R(-8,8)));return {...q,opts:shuffle([...opts])}}
+function newRushTarget(){const previous=S.target;let q=gen(S.level,tier);for(let i=0;i<20&&q.ans===previous;i++)q=gen(S.level,tier);S.target=q.ans;S.q={t:'Target '+S.target,ans:S.target};S.qTime=performance.now();S.qPaused=0;S.rushLeft=+cfg('interval');S.rushSpawn=0;S.bubbles=[];$('#q').textContent='= '+S.target;hud()}
+function equationFor(n){const f=cfg('focus'),ops=f==='auto'?(S.level<=3?['add','sub']:['add','sub','mul','div']):[f];const op=ops[R(0,ops.length-1)];if(op==='sub'){const a=R(1,12);return (n+a)+' − '+a}if(op==='mul'){const factors=[];for(let a=1;a<=Math.min(n,12);a++)if(n%a===0)factors.push(a);const a=factors.length?factors[R(0,factors.length-1)]:1;return a+' × '+n/a}if(op==='div'){const a=R(2,9);return n*a+' ÷ '+a}const a=R(0,n);return a+' + '+(n-a)}
+function rushTick(dt){S.rushLeft-=dt;if(S.rushLeft<=0){newRushTarget();return}S.rushSpawn-=dt;if(S.rushSpawn>0)return;S.rushSpawn=[1.25,1,.8][tier]/+cfg('speed');const lanes=W<600?3:5,r=Math.min(75,W/(lanes*2.4),H*.085);const available=Array.from({length:lanes},(_,i)=>i).filter(i=>!S.bubbles.some(b=>b.lane===i&&b.y<Math.max(150,H*.24)+r*3));if(!available.length)return;const lane=available[R(0,available.length-1)],ok=Math.random()<.55,n=ok?S.target:Math.max(0,S.target+(Math.random()<.5?-1:1)*R(1,5));const actual=n===S.target&&!ok?n+1:n;const x=W/lanes*(lane+.5);S.bubbles.push({v:equationFor(actual),ok:actual===S.target,r,bx:x,x,y:Math.max(150,H*.24)+r,vy:H*.13*+cfg('speed')*[.8,1,1.3][tier],ph:R(0,6),hue:R(0,3),born:S.active,lane})}
+function recordPlayer(b,p){const i=p?.player??0,st=S.players[i];if(b.ok){st.right++;st.score+=10}else{st.wrong++;st.score=Math.max(0,st.score-5)}}
+function adjust(ok){S.recent.push(ok);if(S.recent.length>=8){if(cfg('adaptive')==='on'){const rate=S.recent.filter(Boolean).length/8;if(rate>=.875)tier=Math.min(2,tier+1);else if(rate<=.5)tier=Math.max(0,tier-1)}S.recent=[]}}
+function rushPop(b,p){lastPop=performance.now();S.bubbles=S.bubbles.filter(x=>x!==b);recordPlayer(b,p);adjust(b.ok);S.events.push({question:b.v,answer:S.target,selected:b.v,result:b.ok?'correct':'wrong',seconds:(S.active-b.born).toFixed(2),player:p?.player??0,hand:p?.side||'pointer'});if(b.ok){S.right++;S.streak++;S.bestStreak=Math.max(S.bestStreak,S.streak);S.solved++;const gain=10*(S.star>0?2:1);S.score+=gain;float(b.x,b.y,'+'+gain,'#e5ff75');beep(660);if(S.solved>=8){S.solved=0;S.level=Math.min(6,S.level+1)}}else{S.wrong++;S.streak=0;S.score=Math.max(0,S.score-5);float(b.x,b.y,'−5','#ff9d86');beep(160);S.missed.push({t:b.v,a:'not '+S.target})}burst(b.x,b.y,b.ok?'#e5ff75':'#964734');if(S.score>best())try{localStorage.setItem(bk(),S.score)}catch(e){}hud()}
+function measureMotion(P,now){if(mode!=='cam')return;const seen=new Set();for(const p of P){const key=p.player+':'+p.side;seen.add(key);const m=S.motion[key]||={distance:0,seconds:0,reach:0,samples:0};const old=S.motionPrev[key];if(old&&now-old.now>0&&now-old.now<250){const d=Math.hypot((p.x-old.x)/W,(p.y-old.y)/H);if(d<.25){m.distance+=d;m.seconds+=(now-old.now)/1000}}m.reach=Math.max(m.reach,Math.abs(p.x/W-.5));m.samples++;S.motionPrev[key]={x:p.x,y:p.y,now}}for(const k of Object.keys(S.motionPrev))if(!seen.has(k))delete S.motionPrev[k]}
+function motionSummary(){const entries=Object.entries(S.motion);return entries.length?entries.map(([k,m])=>'P'+(+k[0]+1)+' '+k.split(':')[1]+': '+m.distance.toFixed(2)+' normalized travel').join(' · '):'No camera movement data'}
+function history(){try{return JSON.parse(localStorage.getItem('mathreact_history_v3')||'[]')}catch(e){return []}}
+function saveHistory(){const list=history();list.push({date:new Date().toISOString(),style:S.style,score:S.score,right:S.right,wrong:S.wrong,missed:S.skipped,streak:S.bestStreak,motion:S.motion,players:S.players});try{localStorage.setItem('mathreact_history_v3',JSON.stringify(list.slice(-100)))}catch(e){}}
+const panel=$('#panel'),body=$('#panelBody'),next=$('#panelNext');$('#panelClose').onclick=()=>panel.close();let step=0;const lessons=[['Pick a game','Falling answers, Equation Rush, stationary targets or Memory Math. Equation Rush asks you to catch every expression matching a changing number.'],['Make it yours','Choose difficulty, operation, timer, speed and hands. Teacher mode accepts verified arithmetic questions.'],['Move to play','Allow the camera and reach toward bubbles. In two-player mode stand on opposite sides; your screen half determines your player. Mouse and touch work for solo play.'],['Review and improve','See your score, missed equations and movement summary. Export answers as CSV or open your local progress dashboard.']];function tour(){const l=lessons[step];$('#panelTitle').textContent='Step '+(step+1)+' / '+lessons.length+' · '+l[0];body.textContent=l[1];next.hidden=step===lessons.length-1}$('#tourBtn').onclick=()=>{step=0;tour();panel.showModal()};next.onclick=()=>{step++;tour()};$('#historyBtn').onclick=()=>{next.hidden=true;$('#panelTitle').textContent='Your progress';body.replaceChildren();const rows=history().slice().reverse();const p=document.createElement('p');p.textContent=rows.length?rows.length+' rounds saved on this browser.':'Play a round to start tracking your progress.';body.append(p);if(rows.length){const table=document.createElement('table');for(const values of [['Date','Mode','Score','Correct','Accuracy'],...rows.map(r=>[new Date(r.date).toLocaleDateString(),r.style,r.score,r.right,Math.round(100*r.right/Math.max(1,r.right+r.wrong+r.missed))+'%'])]){const tr=table.insertRow();for(const v of values)tr.insertCell().textContent=v}body.append(table);const exportBtn=document.createElement('button');exportBtn.className='alt';exportBtn.textContent='Export history JSON';exportBtn.onclick=()=>{const u=URL.createObjectURL(new Blob([JSON.stringify(rows,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=u;a.download='mathreact-history.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};body.append(exportBtn)}panel.showModal()};
+$('#style').onchange=()=>{const rev=cfg('style')==='reverse';$('#interval').disabled=!rev;$('#useCustom').disabled=rev};$('#style').onchange();
+
 </script>
 </body>
 </html>
