@@ -25,7 +25,7 @@ Choose timed (30–120 seconds) or untimed practice, arithmetic focus, starting 
 - Progress dashboard: keeps the latest 100 rounds in browser local storage; export history as JSON.
 - Round CSV: question, target/correct answer, selection, result, response time, player and hand.
 - Camera movement summaries: normalized hand travel, approximate speed, and maximum horizontal screen reach. These are image-space estimates, not physical distances or calibrated biomechanics.
-- Quick walkthrough: four short steps explaining settings, controls and results.
+- Spotlight walkthrough: short contextual explanations highlight actual settings and controls, automatically scroll to each item, and support Back, Next, Skip, Escape and arrow-key navigation. Dropdowns use larger text and touch-friendly sizing.
 
 ## Tracking and privacy
 
