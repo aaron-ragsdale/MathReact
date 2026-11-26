@@ -70,7 +70,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
   <div class="row"><button class="alt" id="tourBtn">Quick walkthrough</button><button class="alt" id="historyBtn">Progress dashboard</button></div><div class="settings"><label>Game style<select id="style"><option value="classic">Falling answers</option><option value="reverse">Equation Rush</option><option value="target">Stationary targets</option><option value="memory">Memory Math</option></select></label><label>Target changes every<select id="interval"><option>10</option><option selected>15</option><option>20</option><option>30</option></select></label><label>Adaptive difficulty<select id="adaptive"><option value="off">Off</option><option value="on">On</option></select></label><label>Players<select id="players"><option value="1">Solo</option><option value="2">Two players · split screen</option></select></label></div><details id="teacher"><summary>Teacher mode · custom questions</summary><p>One equation and answer per line, separated by =. Example: 7 × 8 = 56. Use only arithmetic and numbers. Custom questions apply to falling, stationary and memory modes.</p><textarea id="custom" rows="4" placeholder="7 × 8 = 56&#10;12 + 9 = 21"></textarea><label><input type="checkbox" id="useCustom"> Use custom questions</label></details><div class="row" id="modes" role="group" aria-label="Game mode"></div>
   <div class="row" id="tiers" role="group" aria-label="Difficulty"></div>
   <div class="row" id="levels" role="group" aria-label="Starting level"></div>
-  <div class="row" id="opts"></div><div class="settings"><label>Math focus<select id="focus"><option value="auto">Level progression</option><option value="add">Addition</option><option value="sub">Subtraction</option><option value="mul">Multiplication</option><option value="div">Division</option></select></label><label>Round length<select id="duration"><option>30</option><option selected>60</option><option>90</option><option>120</option></select></label><label>Hands<select id="handChoice"><option value="both">Both hands</option><option value="left">Left hand</option><option value="right">Right hand</option></select></label><label>Camera view<select id="view"><option value="corner">Corner</option><option value="background">Background</option><option value="hidden">Hidden</option></select></label><label>Tracking responsiveness <output id="alphaOut">0.35</output><input id="alpha" type="range" min="0.05" max="1" step="0.05" value="0.35"></label><label>Tracking filter<select id="filter"><option value="euro">Adaptive · One Euro</option><option value="ema">EMA</option><option value="raw">Raw</option></select></label><label>Max hand speed<select id="maxHandSpeed"><option value="400">400 px/s</option><option value="600" selected>600 px/s</option><option value="1000">1000 px/s</option><option value="0">Unlimited</option></select></label><label>Bubble speed<select id="speed"><option value="0.65">Relaxed</option><option value="1" selected>Normal</option><option value="1.4">Fast</option></select></label></div><p class="micro">Camera processing stays in your browser. No account needed.</p>
+  <div class="row" id="opts"></div><div class="settings"><label>Math focus<select id="focus"><option value="auto">Level progression</option><option value="add">Addition</option><option value="sub">Subtraction</option><option value="mul">Multiplication</option><option value="div">Division</option></select></label><label>Round length<select id="duration"><option>30</option><option selected>60</option><option>90</option><option>120</option></select></label><label>Hands<select id="handChoice"><option value="both">Both hands</option><option value="left">Left hand</option><option value="right">Right hand</option></select></label><label>Camera view<select id="view"><option value="corner">Corner</option><option value="background">Background</option><option value="hidden">Hidden</option></select></label><label>Tracking responsiveness <output id="alphaOut">0.75</output><input id="alpha" type="range" min="0.05" max="1" step="0.05" value="0.75"></label><label>Tracking filter<select id="filter"><option value="euro">Adaptive · One Euro</option><option value="ema">EMA</option><option value="raw">Raw</option></select></label><label>Max hand speed<select id="maxHandSpeed"><option value="400">400 px/s</option><option value="600">600 px/s</option><option value="1000">1000 px/s</option><option value="0" selected>Unlimited</option></select></label><label>Bubble speed<select id="speed"><option value="0.65">Relaxed</option><option value="1" selected>Normal</option><option value="1.4">Fast</option></select></label></div><p class="micro">Camera processing stays in your browser. No account needed.</p>
   <div class="row" style="margin-top:20px">
     <button class="go" id="camBtn">Play with camera</button>
     <button class="alt" id="mouseBtn">Play with mouse or touch</button>
@@ -225,20 +225,20 @@ function lowpassAlpha(cutoff,dt){return 1/(1+1/(2*Math.PI*Math.max(.001,cutoff)*
 function stabilizeHand(key,x,y,now){
  const scale=640/Math.max(1,W),rx=x*scale,ry=y*scale;
  let f=handFilters.get(key);
- if(!f||now-f.seen>150){f={x:rx,y:ry,rawX:rx,rawY:ry,dx:0,dy:0,seen:now,ready:now+250};handFilters.set(key,f);return null}
+ if(!f||now-f.seen>150){f={x:rx,y:ry,rawX:rx,rawY:ry,dx:0,dy:0,seen:now,ready:now+50};handFilters.set(key,f);return null}
  const dt=Math.max(.008,Math.min(.15,(now-f.seen)/1000));f.seen=now;
  const speed=+cfg('maxHandSpeed'),vx=(rx-f.rawX)/dt,vy=(ry-f.rawY)/dt;
  // Reject isolated jumps; consistent new positions can be reacquired safely.
  const jump=Math.hypot(rx-f.rawX,ry-f.rawY);
- if(jump>Math.max(45,(speed||1600)*dt*2.5)){
+ if(jump>Math.max(150,(speed||2500)*dt*4)){
    if(f.candidate&&Math.hypot(rx-f.candidate.x,ry-f.candidate.y)<35){f.candidate.count++}else f.candidate={x:rx,y:ry,count:1};
-   if(f.candidate.count>=3){handFilters.delete(key);return stabilizeHand(key,x,y,now)}
+   if(f.candidate.count>=2){handFilters.delete(key);return stabilizeHand(key,x,y,now)}
    return null;
  }
  f.candidate=null;f.rawX=rx;f.rawY=ry;
- const da=lowpassAlpha(1,dt);f.dx+=da*(vx-f.dx);f.dy+=da*(vy-f.dy);
+ const da=lowpassAlpha(5,dt);f.dx+=da*(vx-f.dx);f.dy+=da*(vy-f.dy);
  const response=+cfg('alpha'),kind=cfg('filter');
- const alpha=kind==='raw'?1:kind==='ema'?response:lowpassAlpha(.65+response*2+(.002+response*.018)*Math.hypot(f.dx,f.dy),dt);
+ const alpha=kind==='raw'?1:kind==='ema'?response:lowpassAlpha(1.5+response*5+(.008+response*.055)*Math.max(Math.hypot(f.dx,f.dy),Math.hypot(vx,vy)),dt);
  let mx=(rx-f.x)*alpha,my=(ry-f.y)*alpha;
  const dist=Math.hypot(mx,my),limit=speed*dt;
  if(speed&&kind!=='raw'&&dist>limit){mx*=limit/dist;my*=limit/dist}
@@ -247,24 +247,24 @@ function stabilizeHand(key,x,y,now){
  return {x:f.x/scale,y:f.y/scale};
 }
 function track(){
- const now=performance.now();if(!hl||vid.readyState<2||vid.currentTime===lastT||now-lastInference<33)return;lastT=vid.currentTime;lastInference=now;
+ const now=performance.now();if(!hl||vid.readyState<2||vid.currentTime===lastT||now-lastInference<16)return;lastT=vid.currentTime;lastInference=now;
  let ls;try{ls=hl.detectForVideo(vid,now).landmarks}catch(e){hands=[];clearHandFilters();return}
- if(!ls?.length){hands=[];clearHandFilters();return}
+ if(!ls?.length){hands=[];return}
  const next=[],seen=new Set(),multi=cfg('players')==='2',poses=multi?ls:ls.slice(0,1);
  for(const l of poses){
   const center=1-(l[11].x+l[12].x)/2,player=multi?(center<.5?0:1):0;
   for(const [side,ids] of [['left',[17,19,21]],['right',[18,20,22]]]){
    if(cfg('handChoice')!=='both'&&cfg('handChoice')!==side)continue;
    const key=player+':'+side,points=ids.map(i=>l[i]),wrist=l[side==='left'?15:16];
-   if(!wrist||wrist.visibility<.75||points.some(p=>!p||p.visibility<.75||!Number.isFinite(p.x)||!Number.isFinite(p.y)||p.x<0||p.x>1||p.y<0||p.y>1)){handFilters.delete(key);continue}
+   const valid=p=>p&&p.visibility>=.5&&Number.isFinite(p.x)&&Number.isFinite(p.y)&&p.x>=0&&p.x<=1&&p.y>=0&&p.y<=1;const good=points.filter(valid);if(!valid(wrist)||!good.length)continue;
    seen.add(key);
-   const x=(1-points.reduce((a,p)=>a+p.x,0)/3)*W,y=points.reduce((a,p)=>a+p.y,0)/3*H;
+   const x=(1-good.reduce((a,p)=>a+p.x,0)/good.length)*W,y=good.reduce((a,p)=>a+p.y,0)/good.length*H;
    const q=stabilizeHand(key,x,y,now);if(!q)continue;
    if(multi&&(player===0?q.x>W/2:q.x<W/2))continue;
    next.push({...q,r:Math.max(16,Math.min(30,W*.025)),palm:1,side,player});
   }
  }
- for(const key of handFilters.keys())if(!seen.has(key))handFilters.delete(key);
+ for(const [key,f] of handFilters)if(!seen.has(key)&&now-f.seen>150)handFilters.delete(key);
  hands=next;if(hands.length)lastHand=now;
 }
 cv.addEventListener('pointermove',e=>{if(mode==='mouse')mouse={x:e.clientX,y:e.clientY}});
@@ -318,14 +318,14 @@ function frame(now){
     for(const b of [...S.bubbles]){
        if(!S.bubbles.includes(b))continue;
       if(S.style==='memory'&&S.active<S.memoryUntil)continue;if(S.style==='memory')$('#q').textContent='? = ?';if(!fz||b.y<b.r)b.y+=b.vy*dt*(S.fast>0?1.8:1);b.x=b.bx+(b.vy?Math.sin(S.sw*1.1+b.ph)*b.r*.15:0);
-      if(b.y-b.r>H){S.bubbles=S.bubbles.filter(o=>o!==b);
-        if(S.style==='reverse'){if(b.ok){S.skipped++;S.streak=0;S.missed.push({t:b.v,a:b.value});S.events.push({question:b.v,answer:S.target,selected:'',result:'missed',seconds:(S.active-b.born).toFixed(2)})}continue} if(b.ok){S.streak=0;S.skipped++;S.events.push({question:S.q.t,answer:S.q.ans,selected:"",result:"missed",seconds:((performance.now()-S.qTime-S.qPaused)/1000).toFixed(2)});S.bubbles=[];miss();hud();float(W/2,H*.8,'Missed it – next one!','#fff');S.wait=.8}}
-      else if(now-lastPop>300&&b.y>Math.max(110,H*.16)){const hit=P.find(p=>(cfg('players')!=='2'||(b.x<W/2?0:1)===p.player)&&Math.hypot(p.x-b.x,p.y-b.y)<b.r+(p.r||14));if(hit)pop(b,hit)}
+      if(b.vy>0&&b.y+b.r>=H){S.bubbles=S.bubbles.filter(o=>o!==b);
+        if(S.style==='reverse'){if(b.ok){S.skipped++;S.streak=0;S.missed.push({t:b.v,a:b.value});S.events.push({question:b.v,answer:S.target,selected:'',result:'missed',seconds:(S.active-b.born).toFixed(2)})}continue} if(b.ok){S.streak=0;S.skipped++;S.events.push({question:S.q.t,answer:S.q.ans,selected:"",result:"missed",seconds:((performance.now()-S.qTime-S.qPaused)/1000).toFixed(2)});S.bubbles=[];miss();hud();S.wait=.35}}
+      else if(now-lastPop>140&&b.y>Math.max(110,H*.16)){const hit=P.find(p=>(cfg('players')!=='2'||(b.x<W/2?0:1)===p.player)&&Math.hypot(p.x-b.x,p.y-b.y)<b.r+(p.r||14));if(hit)pop(b,hit)}
     }
     if(S.style!=='memory'||S.active>=S.memoryUntil)S.bubbles.forEach(b=>drawBubble(b,T));
     for(const it of [...S.items]){
       it.y+=it.vy*dt;
-      if(it.y-it.r>H)S.items=S.items.filter(o=>o!==it);
+      if(it.y+it.r>=H)S.items=S.items.filter(o=>o!==it);
       else if(P.some(p=>Math.hypot(p.x-it.x,p.y-it.y)<it.r+(p.r||14)))useItem(it);
       else drawItem(it);
     }
