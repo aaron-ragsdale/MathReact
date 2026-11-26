@@ -1,49 +1,40 @@
 # MathReact
 
-**Move. Think. React.** A browser-based math game that combines mental math with movement, reaction and hand-eye coordination.
+**Move. Think. React.** A browser-based math arcade combining mental math with physical movement.
 
-## Play
+## [Play MathReact](https://aaron-ragsdale.github.io/MathReact/)
 
-[Open MathReact](https://aaron-ragsdale.github.io/MathReact/) (available once GitHub Pages is enabled).
+Open the game on a camera-equipped device, select a game style and settings, and choose camera or mouse/touch play. Stand far enough back to keep your hands visible. Clear your play area.
 
-1. Choose timed or untimed practice, difficulty, starting level and math focus.
-2. Select **Play with camera** and allow camera access, or choose mouse/touch mode.
-3. Stand far enough from the camera for your hands to be visible. Reach toward the correct answer bubble using either selected hand. In mouse/touch mode, move or touch the pointer over the answer.
-4. Earn points and build streaks. Every eight correct answers advances the level until Champion.
-5. Review your mistakes or export your results as CSV at the end of the round.
+## Game styles
 
-## Game features
+| Style | Objective |
+| --- | --- |
+| Falling Answers | Solve the displayed equation and reach for its answer. |
+| Equation Rush | Catch as many expressions as possible matching the displayed target. Multiple correct expressions may appear simultaneously. Target changes every 10, 15, 20 or 30 seconds; old bubbles clear at each change. |
+| Stationary Targets | Solve the equation and select a fixed target. |
+| Memory Math | View the equation for two seconds, then select the answer from memory. |
 
-- Six progressive levels, from basic arithmetic to multi-operation expressions (grade labels are approximate, not formal curriculum alignment).
-- Addition, subtraction, multiplication and division focus modes, or automatic level progression.
-- Easy, medium and hard difficulty; relaxed, normal and fast bubble speeds.
-- Timed rounds of 30, 60, 90 or 120 seconds, and untimed practice.
-- Optional power-ups and hazards: freeze, extra time, double points, bombs, fog and speed boosts.
-- Left, right or both hands; adjustable smoothing; corner, background or hidden camera preview.
-- Pause and resume using the button or Space. Switching browser tabs pauses play.
-- Local personal best scores, accuracy, missed-question review and CSV export.
+Choose timed (30–120 seconds) or untimed practice, arithmetic focus, starting level, difficulty, speed, hands, camera view, smoothing, sound and power-ups. Space pauses or resumes a round.
 
-## How computer vision works
+## Additional features
 
-MathReact uses MediaPipe Pose Landmarker Full, which estimates 33 body landmarks for one person. Only the hand landmarks drive gameplay: left pinky/index/thumb (17, 19, 21) and right pinky/index/thumb (18, 20, 22). Each hand cursor is the mean of its three coordinates. Wrist and hand visibility checks reject unreliable detections. Exponential moving average (EMA) filtering reduces jitter; a higher responsiveness value reduces smoothing. Camera coordinates are mirrored for intuitive movement. A short collision cooldown reduces accidental consecutive hits.
+- Adaptive difficulty: after eight selections, difficulty increases at 87.5% correct or higher and decreases at 50% or lower.
+- Two-player camera mode: stand on opposite sides of the view. Players are assigned by shoulder midpoint and can select targets in their own half. The equation and timer are shared; individual hit scores are separate from the combined arcade score. This is experimental, especially in classic modes where targets are shared.
+- Teacher mode: enter one verified arithmetic equation per line, e.g. `7 × 8 = 56`. Supports nonnegative integer answers and single-operation equations. Custom questions apply to falling, stationary and memory modes, not Equation Rush.
+- Progress dashboard: keeps the latest 100 rounds in browser local storage; export history as JSON.
+- Round CSV: question, target/correct answer, selection, result, response time, player and hand.
+- Camera movement summaries: normalized hand travel, approximate speed, and maximum horizontal screen reach. These are image-space estimates, not physical distances or calibrated biomechanics.
+- Quick walkthrough: four short steps explaining settings, controls and results.
 
-The model runs in the browser, attempting GPU acceleration first and falling back to CPU. No separate Hand Landmarker model is used. Pose-based hand positions are approximate, not precise finger tracking.
+## Tracking and privacy
 
-## Privacy and requirements
+MediaPipe Pose Landmarker Full estimates 33 body landmarks, with gameplay using the mean of thumb, index and pinky positions for each hand. GPU initialization falls back to CPU. Visibility filtering, adjustable EMA smoothing and a 300 ms shared hit cooldown help reduce false hits. Two poses are enabled for experimental multiplayer. Camera processing occurs in the browser; no footage is intentionally uploaded or recorded by the game. The model, runtime and fonts are fetched from external hosts, so first load requires connectivity. Local scores and progress stay in the browser unless exported.
 
-Camera frames are processed locally and are not intentionally uploaded or recorded by the application. The page downloads MediaPipe, model assets and fonts from external hosts, so initial internet access is required. Personal best scores use browser localStorage; the CSV is saved only when requested. Camera tracks stop at the end of a round. Use a modern browser with camera permission and HTTPS for camera mode. Mouse/touch mode works without granting camera access.
+## Deploy
 
-CSV rows contain the question, correct answer, selected answer, result and elapsed question time in seconds (excluding manual pauses). This measures time since question presentation, not isolated motor reaction time. Accuracy includes correct selections, wrong selections and missed questions.
+The repository is a static single-page application. In GitHub Settings → Pages, select Deploy from a branch, main, / (root). No server or API key is required. Camera use requires HTTPS and permission.
 
-## Publish using GitHub Pages
+## Limitations
 
-Place `index.html` and `README.md` in the repository root. In GitHub, open **Settings → Pages → Deploy from a branch**, select the default branch and `/ (root)`, then save. Open the Pages URL shown by GitHub. No server, API key or build step is required.
-
-## Repository structure
-
-- `index.html` — game interface, arithmetic generator, rendering, camera inference and scoring.
-- `README.md` — instructions and technical overview.
-
-## Classroom ideas
-
-Try untimed practice before timed rounds, focus on one operation, compare smoothing settings, or discuss the difference between solving a problem and physically reaching its answer. Use mouse/touch as an alternative input method. Results are practice feedback, not a standardized assessment.
+Pose estimates can jitter, especially with occlusion or poor lighting. Response time combines thinking and movement. Multiplayer uses screen halves rather than persistent person identity, and shares questions, timer and global collision cooldown. Browser/device camera performance requires live testing. Results are practice feedback rather than standardized assessments.
