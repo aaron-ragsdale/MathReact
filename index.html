@@ -41,7 +41,18 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 
 :root{--sand:#e5ff75;--mist:#c1d7d2} #menu,#end{background:linear-gradient(120deg,#071b20f7,#12353ce8);padding:clamp(18px,4vw,64px);justify-content:flex-start;gap:5px} .eyebrow{font-size:12px;font-weight:800;letter-spacing:.24em;color:var(--sand)} h1{font-size:clamp(48px,9vw,110px)} #menu p,#end p{margin:12px 0;max-width:65ch;font-size:15px} .settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;max-width:940px;margin:12px 0}.settings label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--mist);background:#ffffff0b;border:1px solid #ffffff20;border-radius:12px;padding:10px}.settings select{background:#102c32;color:white;padding:8px;border:1px solid #ffffff30;border-radius:7px;font:inherit}.settings input{accent-color:var(--sand)} .lv.sel{background:var(--sand);color:#102c32;border-color:var(--sand)} .lv{font-size:13px}.micro{font-size:12px!important} #pauseBtn{position:fixed;right:14px;top:14px;z-index:4;border:1px solid #ffffff50;background:#071b20;color:white;border-radius:99px;padding:10px 16px;cursor:pointer} #v.background{inset:0;width:100%;height:100%;object-fit:fill;opacity:.28;z-index:1;pointer-events:none;border:0;border-radius:0} #v{pointer-events:none} #stats{flex-wrap:wrap;gap:5px} #stats span{font-size:12px} #q{font-size:clamp(32px,6vw,68px)} #hint{max-width:90vw;text-align:center;bottom:12px} #menu,#end{touch-action:pan-y;user-select:text} @media(max-width:600px){#menuBtn,#pauseBtn{top:auto;bottom:10px} #hint{bottom:60px} #v:not(.background){width:110px;bottom:58px} .settings{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
-#teacher{max-width:940px;background:#ffffff0b;padding:12px;border:1px solid #ffffff25;border-radius:12px} #teacher textarea{display:block;width:100%;background:#102c32;color:white;border:1px solid #ffffff40;border-radius:8px;padding:10px;font:inherit;margin:8px 0} #teacher summary{cursor:pointer;font-weight:800} dialog{background:#102c32;color:white;border:1px solid #ffffff40;border-radius:18px;padding:24px;max-width:min(680px,92vw);max-height:85vh;overflow:auto;margin:auto;touch-action:pan-y} dialog::backdrop{background:#000b} dialog p{margin:12px 0;line-height:1.5} dialog table{width:100%;border-collapse:collapse;font-size:13px} dialog td,dialog th{padding:8px;border-bottom:1px solid #ffffff20;text-align:left} .tour-focus{outline:3px solid #e5ff75;outline-offset:5px} #rushInfo{font-weight:800;color:#e5ff75;margin-top:5px;font-size:14px} #menu,#end{overscroll-behavior:contain} #menu .settings{margin:6px 0} </style>
+#teacher{max-width:940px;background:#ffffff0b;padding:12px;border:1px solid #ffffff25;border-radius:12px} #teacher textarea{display:block;width:100%;background:#102c32;color:white;border:1px solid #ffffff40;border-radius:8px;padding:10px;font:inherit;margin:8px 0} #teacher summary{cursor:pointer;font-weight:800} dialog{background:#102c32;color:white;border:1px solid #ffffff40;border-radius:18px;padding:24px;max-width:min(680px,92vw);max-height:85vh;overflow:auto;margin:auto;touch-action:pan-y} dialog::backdrop{background:#000b} dialog p{margin:12px 0;line-height:1.5} dialog table{width:100%;border-collapse:collapse;font-size:13px} dialog td,dialog th{padding:8px;border-bottom:1px solid #ffffff20;text-align:left} .tour-focus{outline:3px solid #e5ff75;outline-offset:5px} #rushInfo{font-weight:800;color:#e5ff75;margin-top:5px;font-size:14px} #menu,#end{overscroll-behavior:contain} #menu .settings{margin:6px 0} 
+.settings{grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:14px;max-width:1100px}.settings label{font-size:14px;padding:12px;gap:9px;min-width:0}.settings select{font-size:16px;min-height:48px;width:100%;padding:10px 12px;cursor:pointer}.settings select:focus-visible{outline:2px solid var(--sand);outline-offset:2px}.settings select:disabled{opacity:.55}
+#spotTour{position:fixed;inset:0;z-index:20;pointer-events:auto;touch-action:pan-y}
+#spotTour[hidden]{display:none}
+#spotHole{position:absolute;border:2px solid #e5ff75;border-radius:14px;box-shadow:0 0 0 200vmax #020b12c9,0 0 26px #e5ff7540;transition:left .22s ease,top .22s ease,width .22s ease,height .22s ease;pointer-events:none}
+#spotCard{position:absolute;width:min(370px,calc(100vw - 28px));padding:18px;border:1px solid #e5ff7550;border-radius:16px;background:#102c32;color:#fff;box-shadow:0 14px 42px #0008;transition:left .22s ease,top .22s ease;touch-action:pan-y}
+#spotCount{font-size:11px;letter-spacing:.16em;color:#e5ff75;font-weight:800}#spotTitle{font-size:21px;margin:8px 0}#spotText{font-size:15px;line-height:1.5;color:#d6e7e4;margin-bottom:14px}
+#spotCard .row{gap:8px;margin:0}#spotCard button{font:600 14px Inter,system-ui;padding:10px 14px;min-height:42px}#spotSkip{margin-left:auto;background:none;border:0;color:#c1d7d2;cursor:pointer}
+@media(max-width:600px){.settings{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.settings label{padding:9px;font-size:12px}.settings select{font-size:16px;padding:9px 5px;min-height:48px}}
+@media(max-width:360px){.settings{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){#spotHole,#spotCard{transition:none}}
+</style>
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -69,7 +80,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 
 <section id="end" style="display:none"><h1>Round <b>over</b></h1><div class="res" id="endStats"></div><p id="review"></p><div class="row"><button class="alt" id="export">Export results CSV</button></div>
   <div class="row"><button class="go" id="again">Play again</button><button class="alt" id="toMenu">Change settings</button></div></section>
-<dialog id="panel"><h2 id="panelTitle"></h2><div id="panelBody"></div><div class="row"><button class="go" id="panelNext" hidden>Next</button><button class="alt" id="panelClose">Close</button></div></dialog><script>
+<div id="spotTour" hidden><div id="spotHole"></div><section id="spotCard" role="dialog" aria-modal="true" aria-labelledby="spotTitle" aria-describedby="spotText"><div id="spotCount"></div><h2 id="spotTitle"></h2><p id="spotText"></p><div class="row"><button class="alt" id="spotBack">Back</button><button class="go" id="spotNext">Next</button><button id="spotSkip">Skip</button></div></section></div><dialog id="panel"><h2 id="panelTitle"></h2><div id="panelBody"></div><div class="row"><button class="go" id="panelNext" hidden>Next</button><button class="alt" id="panelClose">Close</button></div></dialog><script>
 const $=s=>document.querySelector(s), cv=$('#c'), ctx=cv.getContext('2d'), vid=$('#v');
 const CDN='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
 const MODEL='https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_full/float16/1/pose_landmarker_full.task';
@@ -358,7 +369,49 @@ function measureMotion(P,now){if(mode!=='cam')return;const seen=new Set();for(co
 function motionSummary(){const entries=Object.entries(S.motion);return entries.length?entries.map(([k,m])=>'P'+(+k[0]+1)+' '+k.split(':')[1]+': '+m.distance.toFixed(2)+' travel, '+(m.seconds?m.distance/m.seconds:0).toFixed(2)+' units/s, '+(m.reach*100).toFixed(0)+'% max horizontal reach').join(' · '):'No camera movement data'}
 function history(){try{return JSON.parse(localStorage.getItem('mathreact_history_v3')||'[]')}catch(e){return []}}
 function saveHistory(){const list=history();list.push({date:new Date().toISOString(),style:S.style,score:S.score,right:S.right,wrong:S.wrong,missed:S.skipped,streak:S.bestStreak,motion:S.motion,players:S.players});try{localStorage.setItem('mathreact_history_v3',JSON.stringify(list.slice(-100)))}catch(e){}}
-const panel=$('#panel'),body=$('#panelBody'),next=$('#panelNext');$('#panelClose').onclick=()=>panel.close();let step=0;const lessons=[['Pick a game','Falling answers, Equation Rush, stationary targets or Memory Math. Equation Rush asks you to catch every expression matching a changing number.'],['Make it yours','Choose difficulty, operation, timer, speed and hands. Teacher mode accepts verified arithmetic questions.'],['Move to play','Allow the camera and reach toward bubbles. In two-player mode stand on opposite sides; your screen half determines your player. Mouse and touch work for solo play.'],['Review and improve','See your score, missed equations and movement summary. Export answers as CSV or open your local progress dashboard.']];function tour(){const l=lessons[step];$('#panelTitle').textContent='Step '+(step+1)+' / '+lessons.length+' · '+l[0];body.textContent=l[1];next.hidden=step===lessons.length-1}$('#tourBtn').onclick=()=>{step=0;tour();panel.showModal()};next.onclick=()=>{step++;tour()};$('#historyBtn').onclick=()=>{next.hidden=true;$('#panelTitle').textContent='Your progress';body.replaceChildren();const rows=history().slice().reverse();const p=document.createElement('p');p.textContent=rows.length?rows.length+' rounds saved on this browser.':'Play a round to start tracking your progress.';body.append(p);if(rows.length){const table=document.createElement('table');for(const values of [['Date','Mode','Score','Correct','Accuracy'],...rows.map(r=>[new Date(r.date).toLocaleDateString(),r.style,r.score,r.right,Math.round(100*r.right/Math.max(1,r.right+r.wrong+r.missed))+'%'])]){const tr=table.insertRow();for(const v of values)tr.insertCell().textContent=v}body.append(table);const exportBtn=document.createElement('button');exportBtn.className='alt';exportBtn.textContent='Export history JSON';exportBtn.onclick=()=>{const u=URL.createObjectURL(new Blob([JSON.stringify(rows,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=u;a.download='mathreact-history.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};body.append(exportBtn)}panel.showModal()};
+const panel=$('#panel'),body=$('#panelBody'),next=$('#panelNext');$('#panelClose').onclick=()=>panel.close();next.hidden=true;
+const spot=$('#spotTour'),hole=$('#spotHole'),card=$('#spotCard'),menu=$('#menu');
+const lessons=[
+ ['#style','Pick a game','Choose falling answers, Equation Rush, stationary targets or Memory Math.'],
+ ['#interval','Equation Rush','Match the target number. Choose how often it changes. This setting is active in Equation Rush.'],
+ ['#adaptive','Adaptive difficulty','Let difficulty adjust to your recent accuracy, or keep it fixed.'],
+ ['#players','Play together','Choose solo or two-player camera mode. Each player uses their own screen half.'],
+ ['#teacher','Teacher mode','Enter custom equations and answers to practice a specific topic.'],
+ ['#modes','Choose your pace','Play against the clock or practice without a timer.'],
+ ['#tiers','Difficulty','Set the complexity of the questions and number of choices.'],
+ ['#levels','Starting level','Begin with a comfortable level and progress as you play.'],
+ ['#opts','Game extras','Turn sound effects and power-ups on or off.'],
+ ['#focus','Math focus','Practice a specific operation or follow the level progression.'],
+ ['#duration','Round length','Choose how long a timed round lasts.'],
+ ['#handChoice','Hand controls','Use one hand or both to reach for bubbles.'],
+ ['#view','Camera view','Show the camera in the corner, as a background, or hide it.'],
+ ['#filter','Tracking filter','One Euro balances stability and responsiveness. EMA and raw tracking are also available.'],
+ ['#alpha','Responsiveness','Lower values favor stability; higher values follow movement faster.'],
+ ['#maxHandSpeed','Hand speed limit','Increase this if quick reaches feel restricted.'],
+ ['#speed','Bubble speed','Slow down or speed up the falling targets.'],
+ ['#camBtn','Ready to play','Allow camera access and keep your hands in view, or use mouse or touch.'],
+ ['#historyBtn','Review your progress','See previous rounds, scores and accuracy, and export your history.']
+];
+let step=0,tourOpen=false,spotTarget=null,spotFrame=0;
+function getSpotTarget(){const el=$(lessons[step][0]);return el?.matches('select,input')?el.closest('label')||el:el}
+function positionSpot(){
+ if(!tourOpen||!spotTarget)return;const r=spotTarget.getBoundingClientRect(),pad=6,vw=innerWidth,vh=innerHeight;
+ const left=Math.max(4,r.left-pad),right=Math.min(vw-4,r.right+pad),top=Math.max(4,r.top-pad),bottom=Math.min(vh-4,r.bottom+pad);
+ Object.assign(hole.style,{left:left+'px',top:top+'px',width:Math.max(0,right-left)+'px',height:Math.max(0,bottom-top)+'px'});
+ const cw=card.offsetWidth,ch=card.offsetHeight,gap=14;let x=Math.max(12,Math.min(vw-cw-12,left)),y;
+ if(vh-bottom>=ch+gap+12)y=bottom+gap;else if(top>=ch+gap+12)y=top-ch-gap;else if(vw-right>=cw+gap+12){x=right+gap;y=Math.max(12,Math.min(vh-ch-12,top))}else if(left>=cw+gap+12){x=left-cw-gap;y=Math.max(12,Math.min(vh-ch-12,top))}else{y=top>vh-bottom?12:Math.max(12,vh-ch-12)}
+ Object.assign(card.style,{left:x+'px',top:y+'px'});
+}
+function queueSpot(){cancelAnimationFrame(spotFrame);spotFrame=requestAnimationFrame(positionSpot)}
+function showSpot(){spotTarget=getSpotTarget();if(!spotTarget)return;const lesson=lessons[step];$('#spotCount').textContent='STEP '+(step+1)+' / '+lessons.length;$('#spotTitle').textContent=lesson[1];$('#spotText').textContent=lesson[2];$('#spotBack').disabled=step===0;$('#spotNext').textContent=step===lessons.length-1?'Done':'Next';spotTarget.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'});positionSpot();queueSpot()}
+function closeSpot(){tourOpen=false;spot.hidden=true;menu.inert=false;spotTarget=null;cancelAnimationFrame(spotFrame);$('#tourBtn').focus({preventScroll:true})}
+$('#tourBtn').onclick=()=>{step=0;tourOpen=true;spot.hidden=false;menu.inert=true;showSpot();$('#spotNext').focus({preventScroll:true})};
+$('#spotNext').onclick=()=>{if(step===lessons.length-1)closeSpot();else{step++;showSpot()}};
+$('#spotBack').onclick=()=>{if(step>0){step--;showSpot()}};
+$('#spotSkip').onclick=closeSpot;
+menu.addEventListener('scroll',queueSpot,{passive:true});addEventListener('resize',queueSpot);
+document.addEventListener('keydown',e=>{if(!tourOpen)return;if(e.key==='Escape'){e.preventDefault();closeSpot()}else if(e.key==='ArrowRight'){e.preventDefault();$('#spotNext').click()}else if(e.key==='ArrowLeft'){e.preventDefault();$('#spotBack').click()}else if(e.key==='Tab'){const buttons=[...card.querySelectorAll('button:not(:disabled)')];const i=buttons.indexOf(document.activeElement);e.preventDefault();buttons[(i+(e.shiftKey?-1:1)+buttons.length)%buttons.length].focus()}});
+$('#historyBtn').onclick=()=>{next.hidden=true;$('#panelTitle').textContent='Your progress';body.replaceChildren();const rows=history().slice().reverse();const p=document.createElement('p');p.textContent=rows.length?rows.length+' rounds saved on this browser.':'Play a round to start tracking your progress.';body.append(p);if(rows.length){const table=document.createElement('table');for(const values of [['Date','Mode','Score','Correct','Accuracy'],...rows.map(r=>[new Date(r.date).toLocaleDateString(),r.style,r.score,r.right,Math.round(100*r.right/Math.max(1,r.right+r.wrong+r.missed))+'%'])]){const tr=table.insertRow();for(const v of values)tr.insertCell().textContent=v}body.append(table);const exportBtn=document.createElement('button');exportBtn.className='alt';exportBtn.textContent='Export history JSON';exportBtn.onclick=()=>{const u=URL.createObjectURL(new Blob([JSON.stringify(rows,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=u;a.download='mathreact-history.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};body.append(exportBtn)}panel.showModal()};
 $('#style').onchange=()=>{const rev=cfg('style')==='reverse';$('#interval').disabled=!rev;$('#useCustom').disabled=rev};$('#style').onchange();
 
 </script>
