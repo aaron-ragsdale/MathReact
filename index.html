@@ -52,6 +52,11 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 @media(max-width:600px){.settings{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.settings label{padding:9px;font-size:12px}.settings select{font-size:16px;padding:9px 5px;min-height:48px}}
 @media(max-width:360px){.settings{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){#spotHole,#spotCard{transition:none}}
+
+#endProgress{width:100%;max-width:1100px;margin:16px 0 26px;padding:clamp(12px,2vw,24px);background:#ffffff09;border:1px solid #ffffff24;border-radius:18px}
+.progress-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}.progress-head h2{font-size:clamp(20px,3vw,28px)}.progress-head select{background:#102c32;color:white;padding:10px;border:1px solid #ffffff40;border-radius:8px;font:inherit;min-height:44px;max-width:100%}
+.progress-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin:12px 0}.progress-kpi{padding:12px;background:#ffffff0a;border-radius:10px;border:1px solid #ffffff14}.progress-kpi span{display:block;color:var(--mist);font-size:12px;margin-bottom:6px}.progress-kpi strong{font-size:clamp(22px,3vw,32px);color:var(--sand)}
+.progress-chart{margin:12px 0;padding:10px;background:#071b2080;border-radius:12px}.progress-chart svg{width:100%;height:auto;display:block;max-height:220px}.progress-table-wrap{overflow:auto;max-height:300px;touch-action:pan-x pan-y}.progress-table{width:100%;border-collapse:collapse;font-size:14px;white-space:nowrap}.progress-table th,.progress-table td{padding:10px;text-align:left;border-bottom:1px solid #ffffff20}.progress-table th{color:var(--mist);font-size:12px;position:sticky;top:0;background:#102c32}.progress-table tr.latest td{color:var(--sand);font-weight:700}.progress-caption{font-size:12px!important;color:var(--mist);margin:8px 0!important}.progress-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.progress-actions button{font-size:14px;padding:10px 16px}#end{padding-bottom:36px} 
 </style>
 </head>
 <body>
@@ -79,7 +84,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 </section>
 
 <section id="end" style="display:none"><h1>Round <b>over</b></h1><div class="res" id="endStats"></div><p id="review"></p><div class="row"><button class="alt" id="export">Export results CSV</button></div>
-  <div class="row"><button class="go" id="again">Play again</button><button class="alt" id="toMenu">Change settings</button></div></section>
+  <div class="row"><button class="go" id="again">Play again</button><button class="alt" id="toMenu">Change settings</button></div><section id="endProgress" aria-label="Progress dashboard"></section></section>
 <div id="spotTour" hidden><div id="spotHole"></div><section id="spotCard" role="dialog" aria-modal="true" aria-labelledby="spotTitle" aria-describedby="spotText"><div id="spotCount"></div><h2 id="spotTitle"></h2><p id="spotText"></p><div class="row"><button class="alt" id="spotBack">Back</button><button class="go" id="spotNext">Next</button><button id="spotSkip">Skip</button></div></section></div><dialog id="panel"><h2 id="panelTitle"></h2><div id="panelBody"></div><div class="row"><button class="go" id="panelNext" hidden>Next</button><button class="alt" id="panelClose">Close</button></div></dialog><script>
 const $=s=>document.querySelector(s), cv=$('#c'), ctx=cv.getContext('2d'), vid=$('#v');
 const CDN='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
@@ -206,7 +211,7 @@ function endRound(){
   const n=S.right+S.wrong+S.skipped,acc=n?Math.round(S.right/n*100):0;
   $('#endStats').innerHTML=`<div>${S.score}<small>score${S.score>0&&S.score>=best()?' · matches best':''}</small></div><div>${S.right}<small>correct</small></div><div>${acc}%<small>accuracy</small></div><div>${S.level}<small>level reached</small></div><div>${S.skipped}<small>missed questions</small></div>`;
   $('#review').innerHTML=S.missed.length?'Worth another look: '+S.missed.slice(0,6).map(m=>`${m.t} = <b>${m.a}</b>`).join(' &nbsp;·&nbsp; '):(S.right?'Clean round. Nothing to review.':'');
-  $('#review').append(document.createTextNode(' · Best streak '+S.bestStreak+' · '+motionSummary()+(cfg('players')==='2'?` · P1 ${S.players[0].score} / P2 ${S.players[1].score}`:'')));$('#end').style.display='flex';[523,659,784].forEach((f,i)=>setTimeout(()=>beep(f,.25,'triangle'),i*120));
+  $('#review').append(document.createTextNode(' · Best streak '+S.bestStreak+' · '+motionSummary()+(cfg('players')==='2'?` · P1 ${S.players[0].score} / P2 ${S.players[1].score}`:'')));$('#end').style.display='flex';$('#end').scrollTop=0;renderProgress($('#endProgress'),true);[523,659,784].forEach((f,i)=>setTimeout(()=>beep(f,.25,'triangle'),i*120));
 }
 
 /* ---------- Hand tracking ---------- */
@@ -416,7 +421,31 @@ $('#spotBack').onclick=()=>{if(step>0){step--;showSpot()}};
 $('#spotSkip').onclick=closeSpot;
 menu.addEventListener('scroll',queueSpot,{passive:true});addEventListener('resize',queueSpot);
 document.addEventListener('keydown',e=>{if(!tourOpen)return;if(e.key==='Escape'){e.preventDefault();closeSpot()}else if(e.key==='ArrowRight'){e.preventDefault();$('#spotNext').click()}else if(e.key==='ArrowLeft'){e.preventDefault();$('#spotBack').click()}else if(e.key==='Tab'){const buttons=[...card.querySelectorAll('button:not(:disabled)')];const i=buttons.indexOf(document.activeElement);e.preventDefault();buttons[(i+(e.shiftKey?-1:1)+buttons.length)%buttons.length].focus()}});
-$('#historyBtn').onclick=()=>{next.hidden=true;$('#panelTitle').textContent='Your progress';body.replaceChildren();const rows=history().slice().reverse();const p=document.createElement('p');p.textContent=rows.length?rows.length+' rounds saved on this browser.':'Play a round to start tracking your progress.';body.append(p);if(rows.length){const table=document.createElement('table');for(const values of [['Date','Mode','Score','Correct','Accuracy'],...rows.map(r=>[new Date(r.date).toLocaleDateString(),r.style,r.score,r.right,Math.round(100*r.right/Math.max(1,r.right+r.wrong+r.missed))+'%'])]){const tr=table.insertRow();for(const v of values)tr.insertCell().textContent=v}body.append(table);const exportBtn=document.createElement('button');exportBtn.className='alt';exportBtn.textContent='Export history JSON';exportBtn.onclick=()=>{const u=URL.createObjectURL(new Blob([JSON.stringify(rows,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=u;a.download='mathreact-history.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};body.append(exportBtn)}panel.showModal()};
+
+const modeNames={classic:'Falling Answers',reverse:'Equation Rush',target:'Stationary Targets',memory:'Memory Math'};
+const roundAccuracy=r=>Math.round(100*(Number(r.right)||0)/Math.max(1,(Number(r.right)||0)+(Number(r.wrong)||0)+(Number(r.missed)||0)));
+function exportProgress(rows){const u=URL.createObjectURL(new Blob([JSON.stringify(rows,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=u;a.download='mathreact-history.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function renderProgress(root,atEnd=false,selection=atEnd?S.style:'all'){
+ root.replaceChildren();
+ const all=history().filter(r=>r&&typeof r==='object'),rows=all.filter(r=>selection==='all'||r.style===selection);
+ const el=(tag,cls,txt)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e};
+ const head=el('div','progress-head');head.append(el('h2','','Your progress'));const select=el('select');select.setAttribute('aria-label','Filter progress by game mode');for(const [value,label] of [['all','All game modes'],...Object.entries(modeNames)]){const opt=el('option','',label);opt.value=value;select.append(opt)}select.value=selection;select.onchange=()=>renderProgress(root,atEnd,select.value);head.append(select);root.append(head);
+ root.append(el('p','progress-caption',all.length?all.length+' rounds saved on this browser. Compare rounds with similar settings for a fair comparison.':'Play a round to start tracking your progress.'));
+ if(!rows.length){root.append(el('p','','No rounds saved for this mode yet.'));return}
+ const latest=rows.at(-1),previous=rows.at(-2),avg=Math.round(rows.reduce((sum,r)=>sum+roundAccuracy(r),0)/rows.length);
+ const change=previous?latest.score-previous.score:null;
+ const kpis=el('div','progress-kpis');for(const [label,value] of [['Rounds',rows.length],['Best score',Math.max(...rows.map(r=>Number(r.score)||0))],['Average accuracy',avg+'%'],['Latest vs previous',change===null?'—':(change>0?'+':'')+change]]){const k=el('div','progress-kpi');k.append(el('span','',label),el('strong','',value));kpis.append(k)}root.append(kpis);
+ const recent=rows.slice(-10);const chart=el('div','progress-chart');chart.append(el('p','progress-caption','Score trend · last '+recent.length+' round'+(recent.length===1?'':'s')));
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 640 180');svg.setAttribute('role','img');svg.setAttribute('aria-label','Recent scores: '+recent.map(r=>r.score).join(', '));
+ const max=Math.max(1,...recent.map(r=>Number(r.score)||0));const x=i=>recent.length===1?320:48+i*568/(recent.length-1),y=v=>145-120*(Number(v)||0)/max;
+ const shape=(tag,attrs,txt)=>{const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);if(txt!==undefined)n.textContent=txt;svg.append(n);return n};
+ for(let i=0;i<=4;i++){const v=max*i/4,yy=y(v);shape('line',{x1:48,x2:616,y1:yy,y2:yy,stroke:'#ffffff20'});shape('text',{x:40,y:yy+4,'text-anchor':'end',fill:'#c1d7d2','font-size':11},Math.round(v))}
+ if(recent.length>1)shape('polyline',{points:recent.map((r,i)=>x(i)+','+y(r.score)).join(' '),fill:'none',stroke:'#e5ff75','stroke-width':3,'stroke-linejoin':'round'});
+ recent.forEach((r,i)=>{const c=shape('circle',{cx:x(i),cy:y(r.score),r:5,fill:'#e5ff75'});const t=document.createElementNS('http://www.w3.org/2000/svg','title');t.textContent='Round '+(rows.length-recent.length+i+1)+': '+r.score;c.append(t);shape('text',{x:x(i),y:165,'text-anchor':'middle',fill:'#c1d7d2','font-size':11},rows.length-recent.length+i+1)});chart.append(svg);root.append(chart);
+ const wrap=el('div','progress-table-wrap'),table=el('table','progress-table'),thead=table.createTHead(),hr=thead.insertRow();for(const label of ['Date','Game mode','Score','Correct','Accuracy','Misses']){const th=el('th','',label);th.scope='col';hr.append(th)}const tbody=table.createTBody();for(const row of rows.slice().reverse()){const tr=tbody.insertRow();if(row===all.at(-1))tr.className='latest';for(const value of [new Date(row.date).toLocaleString(),modeNames[row.style]||row.style,row.score,row.right,roundAccuracy(row)+'%',row.missed??0])tr.insertCell().textContent=value??''}wrap.append(table);root.append(wrap);
+ const actions=el('div','progress-actions'),exportBtn=el('button','alt','Export history JSON');exportBtn.onclick=()=>exportProgress(all);actions.append(exportBtn);root.append(actions);
+}
+$('#historyBtn').onclick=()=>{next.hidden=true;$('#panelTitle').textContent='Progress dashboard';renderProgress(body,false);panel.showModal()};
 $('#style').onchange=()=>{const rev=cfg('style')==='reverse';$('#interval').disabled=!rev;$('#useCustom').disabled=rev};$('#style').onchange();
 
 </script>
